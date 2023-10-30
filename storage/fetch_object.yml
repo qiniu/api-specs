@@ -43,3 +43,5 @@ response:
             key: mimeType
             documentation: 对象 MIME 类型
             type: string
+        name: FetchedObjectMetadata
+        documentation: 抓取到的文件元信息
