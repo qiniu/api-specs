@@ -11,6 +11,7 @@ request:
       - field_name: bucket
         type: string
         documentation: 需要设定镜像源的目标空间名
+        service_bucket: plain_text
       - path_segment: from
         field_name: src_site_url
         type: string

@@ -10,6 +10,7 @@ request:
       query_name: tbl
       query_type: string
       documentation: 要获取域名列表的目标空间名称
+      service_bucket: plain_text
 response:
   body:
     json:

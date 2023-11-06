@@ -11,6 +11,7 @@ request:
       query_name: bucket
       query_type: string
       documentation: 空间名称
+      service_bucket: plain_text
   body:
     json:
       struct:

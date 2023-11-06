@@ -10,6 +10,7 @@ request:
       query_name: bucket
       query_type: string
       documentation: 指定存储空间
+      service_bucket: plain_text
     - field_name: marker
       query_name: marker
       query_type: string

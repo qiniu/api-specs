@@ -17,6 +17,7 @@ request:
             key: bucket
             type: string
             documentation: 所在区域的存储空间
+            service_bucket: plain_text
           - field_name: host
             key: host
             type: string

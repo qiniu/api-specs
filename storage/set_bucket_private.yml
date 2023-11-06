@@ -13,6 +13,7 @@ request:
           key: bucket
           type: string
           documentation: 空间名称
+          service_bucket: plain_text
         - field_name: is_private
           key: private
           type: integer

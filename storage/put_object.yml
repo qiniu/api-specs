@@ -15,6 +15,7 @@ request:
           key: token
           documentation: 上传凭证
           type: upload_token
+          service_bucket: upload_token
         - field_name: crc32
           key: crc32
           documentation: 上传内容的 CRC32 校验码，如果指定此值，则七牛服务器会使用此值进行内容检验

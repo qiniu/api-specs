@@ -10,3 +10,4 @@ request:
       - field_name: bucket
         type: string
         documentation: 需要删除的目标空间名
+        service_bucket: plain_text

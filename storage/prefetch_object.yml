@@ -12,3 +12,4 @@ request:
         type: string
         documentation: 指定目标对象空间与目标对象名称
         encode: url_safe_base64
+        service_bucket: entry
