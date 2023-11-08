@@ -19,7 +19,7 @@ request:
         - field_name: crc32
           key: crc32
           documentation: 上传内容的 CRC32 校验码，如果指定此值，则七牛服务器会使用此值进行内容检验
-          type: string
+          type: integer
         - field_name: file
           key: file
           documentation: 上传文件的内容
