@@ -10,6 +10,7 @@ request:
       query_name: shared
       query_type: string
       documentation: 包含共享存储空间，如果为 "rd" 则包含具有读权限空间，如果为 "rw" 则包含读写权限空间
+      optional: true
 response:
   body:
     json:

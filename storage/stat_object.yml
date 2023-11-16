@@ -17,6 +17,7 @@ request:
       query_name: needparts
       query_type: boolean
       documentation: 如果文件是通过分片上传的，是否返回对应的分片信息
+      optional: true
 response:
   body:
     json:
