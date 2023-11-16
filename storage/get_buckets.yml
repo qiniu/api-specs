@@ -5,6 +5,11 @@ base_path: /buckets
 documentation: 获取拥有的所有存储空间列表
 request:
   authorization: qiniu
+  query_names:
+    - field_name: shared
+      query_name: shared
+      query_type: string
+      documentation: 包含共享存储空间，如果为 "rd" 则包含具有读权限空间，如果为 "rw" 则包含读写权限空间
 response:
   body:
     json:
