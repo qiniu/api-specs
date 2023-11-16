@@ -43,7 +43,7 @@ response:
             key: putTime
             documentation: 文件上传时间，UNIX 时间戳格式，单位为 100 纳秒
             type: integer
-          - field_name: unfreezing_status
+          - field_name: restoring_status
             key: restoreStatus
             documentation: 归档存储文件的解冻状态，`2` 表示解冻完成，`1` 表示解冻中；归档文件冻结时，不返回该字段
             type: integer

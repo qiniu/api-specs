@@ -93,7 +93,7 @@ response:
                       documentation: 对象存储类型，`0` 表示普通存储，`1` 表示低频存储，`2` 表示归档存储
                       optional: true
                       type: integer
-                    - field_name: unfreezing_status
+                    - field_name: restoring_status
                       key: status
                       documentation: 文件的存储状态，即禁用状态和启用状态间的的互相转换，`0` 表示启用，`1`表示禁用
                       type: integer
