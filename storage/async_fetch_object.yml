@@ -9,8 +9,8 @@ request:
     json:
       struct:
         fields:
-          - field_name: body
-            key: body
+          - field_name: url
+            key: url
             type: string
             documentation: 需要抓取的 URL，支持设置多个用于高可用，以’;'分隔，当指定多个 URL 时可以在前一个 URL 抓取失败时重试下一个
           - field_name: bucket
