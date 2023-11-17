@@ -96,6 +96,11 @@ response:
                         documentation: 文件生命周期中转为归档存储的日期，UNIX 时间戳格式，文件在设置转归档后才会返回该字段，仅对 stat 指令才有效
                         type: integer
                         optional: true
+                      - field_name: transition_to_deep_archive_time
+                        key: transitionToDeepArchive
+                        documentation: 文件生命周期中转为深度归档存储的日期，UNIX 时间戳格式，文件在设置转归档后才会返回该字段，仅对 stat 指令才有效
+                        type: integer
+                        optional: true
                     name: OperationResponseData
                     documentation: 管理指令的响应数据
             name: OperationResponse
