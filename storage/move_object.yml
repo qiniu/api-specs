@@ -20,3 +20,4 @@ request:
         field_name: is_force
         type: boolean
         documentation: 如果目标对象名已被占用，则返回错误码 614，且不做任何覆盖操作；如果指定为 true，会强制覆盖目标对象
+        optional: true
