@@ -28,6 +28,11 @@ request:
             type: string
             documentation: 对象名称，如果不传，则默认为文件的哈希值
             optional: true
+          - field_name: md5
+            key: md5
+            type: string
+            documentation: 文件 MD5，传入以后会在存入存储时对文件做校验，校验失败则不存入指定空间
+            optional: true
           - field_name: etag
             key: etag
             type: string
