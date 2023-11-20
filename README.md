@@ -117,6 +117,15 @@ HTTP 方法
 | `string`  | 无     | 浮点型数字 |
 | `string`  | 无     | 布尔值     |
 
+#### **`OptionalType`** 枚举类型
+
+可选字段类型
+
+| 字段名称  | 值类型 | 描述       |
+| --------- | ------ | ---------- |
+| `keepempty` | 无     | 即使用户不传值，也会发送空值   |
+| `omitempty` | 无     | 如果用户不传值，则该字段省略   |
+
 #### **`PathParams`**
 
 URL 路径请求参数列表
@@ -130,13 +139,14 @@ URL 路径请求参数列表
 
 URL 路径有名请求参数
 
-| 字段名称        | 类型                 | 描述                                                      |
-| --------------- | -------------------- | --------------------------------------------------------- |
-| `path_segment`  | `Option<String>`     | URL 路径段落，如果为空，则表示参数直接追加在 URL 路径末尾 |
-| `field_name`    | `String`             | URL 路径参数名称                                          |
-| `type`          | `StringLikeType`     | URL 路径参数类型                                          |
-| `documentation` | `String`             | URL 路径参数文档                                          |
-| `encode`        | `Option<EncodeType>` | URL 路径参数编码方式，如果为空，表示直接转码成字符串      |
+| 字段名称        | 类型                  | 描述                                                      |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| `path_segment`  | `Option<String>`       | URL 路径段落，如果为空，则表示参数直接追加在 URL 路径末尾 |
+| `field_name`    | `String`               | URL 路径参数名称                                          |
+| `type`          | `StringLikeType`       | URL 路径参数类型                                          |
+| `documentation` | `String`               | URL 路径参数文档                                          |
+| `encode`        | `Option<EncodeType>`   | URL 路径参数编码方式，如果为空，表示直接转码成字符串      |
+| `optional`      | `Option<OptionalType>` | URL 路径参数是否可选，如果为空，则表示必填      |
 
 #### **`FreePathParams`**
 
@@ -167,6 +177,7 @@ HTTP 头参数信息
 | `field_name`    | `String` | HTTP 头参数名称 |
 | `header_name`   | `String` | HTTP 头名称     |
 | `documentation` | `String` | HTTP 头参数文档 |
+| `optional`      | `Option<OptionalType>` | HTTP 头参数是否可选，如果为空，则表示必填      |
 
 #### **`QueryName`**
 
@@ -178,6 +189,7 @@ URL 查询请求参数信息
 | `query_name`    | `String`         | URL 查询参数名称 |
 | `documentation` | `String`         | URL 查询参数文档 |
 | `query_type`    | `StringLikeType` | URL 查询参数类型 |
+| `optional`      | `Option<OptionalType>` | URL 查询参数是否可选，如果为空，则表示必填      |
 
 #### **`FormUrlencodedRequestStruct`**
 
@@ -198,6 +210,7 @@ URL 编码表单请求字段
 | `documentation` | `String`         | URL 编码表单参数文档             |
 | `type`          | `StringLikeType` | URL 编码表单参数类型             |
 | `multiple`      | `bool`           | URL 编码表单参数是否可以有多个值 |
+| `optional`      | `Option<OptionalType>` | URL 编码表单参数是否可选，如果为空，则表示必填      |
 
 #### **`MultipartFormDataRequestStruct`**
 
@@ -218,6 +231,7 @@ URL 编码表单请求字段
 | `key`           | `String`                       | 复合表单参数名称 |
 | `documentation` | `String`                       | 复合表单参数文档 |
 | `type`          | `MultipartFormDataRequestType` | 复合表单参数类型 |
+| `optional`      | `Option<OptionalType>`         | 复合表单参数是否可选，如果为空，则表示必填      |
 
 #### **`FreeMultipartFormDataRequestFields`**
 
@@ -277,13 +291,13 @@ JSON 结构体
 
 JSON 结构体字段
 
-| 字段名称        | 类型       | 描述                  |
-| --------------- | ---------- | --------------------- |
-| `field_name`    | `String`   | JSON 字段名称         |
-| `key`           | `String`   | JSON 字段参数名称     |
-| `documentation` | `String`   | JSON 字段参数文档     |
-| `type`          | `JsonType` | JSON 字段类型         |
-| `optional`      | `bool`     | JSON 字段参数是否可选 |
+| 字段名称        | 类型                    | 描述                  |
+| --------------- | ----------------------- | --------------------- |
+| `field_name`    | `String`                | JSON 字段名称         |
+| `key`           | `String`                | JSON 字段参数名称     |
+| `documentation` | `String`                | JSON 字段参数文档     |
+| `type`          | `JsonType`              | JSON 字段类型         |
+| `optional`      | `Option<OptionalType>`  | 复合表单参数是否可选，如果为空，则表示必填 |
 
 ## 联系我们
 
