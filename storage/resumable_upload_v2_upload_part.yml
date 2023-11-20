@@ -10,6 +10,7 @@ request:
     - field_name: md5
       header_name: Content-MD5
       documentation: 上传块内容的 md5 值，如果指定服务端会进行校验，不指定不校验
+      optional: omitempty
   path_params:
     named:
       - field_name: bucket_name

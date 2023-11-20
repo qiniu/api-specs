@@ -17,7 +17,7 @@ request:
       query_name: needparts
       query_type: boolean
       documentation: 如果文件是通过分片上传的，是否返回对应的分片信息
-      optional: true
+      optional: omitempty
 response:
   body:
     json:
@@ -47,47 +47,47 @@ response:
             key: endUser
             documentation: 资源内容的唯一属主标识
             type: string
-            optional: true
+            optional: omitempty
           - field_name: restoring_status
             key: restoreStatus
             documentation: 归档存储文件的解冻状态，`2` 表示解冻完成，`1` 表示解冻中；归档文件冻结时，不返回该字段
             type: integer
-            optional: true
+            optional: omitempty
           - field_name: status
             key: status
             documentation: 文件状态。`1` 表示禁用；只有禁用状态的文件才会返回该字段
             type: integer
-            optional: true
+            optional: omitempty
           - field_name: md5
             key: md5
             documentation: 对象 MD5 值，只有通过直传文件和追加文件 API 上传的文件，服务端确保有该字段返回
             type: string
-            optional: true
+            optional: omitempty
           - field_name: expiration_time
             key: expiration
             documentation: 文件过期删除日期，UNIX 时间戳格式，文件在设置过期时间后才会返回该字段
             type: integer
-            optional: true
+            optional: omitempty
           - field_name: transition_to_ia_time
             key: transitionToIA
             documentation: 文件生命周期中转为低频存储的日期，UNIX 时间戳格式，文件在设置转低频后才会返回该字段
             type: integer
-            optional: true
+            optional: omitempty
           - field_name: transition_to_archive_time
             key: transitionToARCHIVE
             documentation: 文件生命周期中转为归档存储的日期，UNIX 时间戳格式，文件在设置转归档后才会返回该字段
             type: integer
-            optional: true
+            optional: omitempty
           - field_name: transition_to_deep_archive_time
             key: transitionToDeepArchive
             documentation: 文件生命周期中转为深度归档存储的日期，UNIX 时间戳格式，文件在设置转归档后才会返回该字段
             type: integer
-            optional: true
+            optional: omitempty
           - field_name: metadata
             key: x-qn-meta
             documentation: 对象存储元信息
             type: string_map
-            optional: true
+            optional: omitempty
           - field_name: parts
             key: parts
             documentation: 每个分片的大小，如没有指定 need_parts 参数则不返回
@@ -96,6 +96,6 @@ response:
                 name: PartSizes
                 type: integer
                 documentation: 每个分片的大小
-            optional: true
+            optional: omitempty
         name: ObjectMetadata
         documentation: 文件元信息

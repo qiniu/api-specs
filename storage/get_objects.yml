@@ -15,27 +15,27 @@ request:
       query_name: marker
       query_type: string
       documentation: 上一次列举返回的位置标记，作为本次列举的起点信息
-      optional: true
+      optional: omitempty
     - field_name: limit
       query_name: limit
       query_type: integer
       documentation: 本次列举的条目数，范围为 1-1000
-      optional: true
+      optional: omitempty
     - field_name: prefix
       query_name: prefix
       query_type: string
       documentation: 指定前缀，只有资源名匹配该前缀的资源会被列出
-      optional: true
+      optional: omitempty
     - field_name: delimiter
       query_name: delimiter
       query_type: string
       documentation: 指定目录分隔符，列出所有公共前缀（模拟列出目录效果）
-      optional: true
+      optional: omitempty
     - field_name: need_parts
       query_name: needparts
       query_type: boolean
       documentation: 如果文件是通过分片上传的，是否返回对应的分片信息
-      optional: true
+      optional: omitempty
 response:
   body:
     json:
@@ -45,7 +45,7 @@ response:
             key: marker
             documentation: 有剩余条目则返回非空字符串，作为下一次列举的参数传入，如果没有剩余条目则返回空字符串
             type: string
-            optional: true
+            optional: omitempty
           - field_name: common_prefixes
             key: common_prefixes
             documentation: 公共前缀的数组，如没有指定 delimiter 参数则不返回
@@ -54,7 +54,7 @@ response:
                 name: CommonPrefixes
                 type: string
                 documentation: 公共前缀的数组
-            optional: true
+            optional: omitempty
           - field_name: items
             key: items
             type:
@@ -86,21 +86,22 @@ response:
                     - field_name: type
                       key: type
                       documentation: 对象存储类型，`0` 表示普通存储，`1` 表示低频存储，`2` 表示归档存储
-                      optional: true
+                      optional: omitempty
                       type: integer
                     - field_name: end_user
                       key: endUser
                       documentation: 资源内容的唯一属主标识
                       type: string
-                      optional: true
+                      optional: omitempty
                     - field_name: restoring_status
                       key: status
                       documentation: 文件的存储状态，即禁用状态和启用状态间的的互相转换，`0` 表示启用，`1`表示禁用
                       type: integer
+                      optional: omitempty
                     - field_name: md5
                       key: md5
                       documentation: 对象 MD5 值，只有通过直传文件和追加文件 API 上传的文件，服务端确保有该字段返回
-                      optional: true
+                      optional: omitempty
                       type: string
                     - field_name: parts
                       key: parts
@@ -110,7 +111,7 @@ response:
                           name: PartSizes
                           type: integer
                           documentation: 每个分片的大小
-                      optional: true
+                      optional: omitempty
                     name: ListedObjectEntry
                     documentation: 对象条目，包含对象的元信息
                 documentation: 条目的数组，不能用来判断是否还有剩余条目

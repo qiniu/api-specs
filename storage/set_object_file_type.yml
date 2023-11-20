@@ -17,3 +17,4 @@ request:
         field_name: type
         type: integer
         documentation: "`0` 表示标准存储；`1` 表示低频存储；`2` 表示归档存储"
+        optional: keepempty

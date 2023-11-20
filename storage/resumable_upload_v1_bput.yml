@@ -14,6 +14,7 @@ request:
       - field_name: chunk_offset
         type: integer
         documentation: 当前片在整个块中的起始偏移
+        optional: keepempty
   body: binary_data
 response:
   body:

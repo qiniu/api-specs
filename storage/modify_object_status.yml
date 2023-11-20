@@ -17,3 +17,4 @@ request:
         field_name: status
         type: integer
         documentation: "`0` 表示启用；`1` 表示禁用"
+        optional: keepempty

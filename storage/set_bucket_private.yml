@@ -18,3 +18,4 @@ request:
           key: private
           type: integer
           documentation: "`0`: 公开，`1`: 私有"
+          optional: keepempty

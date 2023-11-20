@@ -24,12 +24,12 @@ request:
       query_name: max-parts
       query_type: integer
       documentation: 响应中的最大分片数目。默认值：1000，最大值：1000
-      optional: true
+      optional: omitempty
     - field_name: part_number_marker
       query_name: part-number_marker
       query_type: integer
       documentation: 指定列举的起始位置，只有 partNumber 值大于该参数的分片会被列出
-      optional: true
+      optional: omitempty
 response:
   body:
     json:
@@ -66,8 +66,8 @@ response:
                         key: partNumber
                         type: integer
                         documentation: 每一个上传的分片都有一个标识它的号码
-                      - field_name: putTime
-                        key: put_time
+                      - field_name: put_time
+                        key: putTime
                         type: integer
                         documentation: 分片上传时间 UNIX 时间戳
                     name: ListedPartInfo

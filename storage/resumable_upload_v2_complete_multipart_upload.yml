@@ -47,22 +47,22 @@ request:
             key: fname
             type: string
             documentation: 上传的原始文件名，若未指定，则魔法变量中无法使用 fname，ext，suffix
-            optional: true
+            optional: omitempty
           - field_name: mimeType
             key: mime_type
             type: string
             documentation: 若指定了则设置上传文件的 MIME 类型，若未指定，则根据文件内容自动检测 MIME 类型
-            optional: true
+            optional: omitempty
           - field_name: metadata
             key: metadata
             type: string_map
             documentation: 用户自定义文件 metadata 信息的键值对，可以设置多个，MetaKey 和 MetaValue 都是 string，，其中 可以由字母、数字、下划线、减号组成，且长度小于等于 50，单个文件 MetaKey 和 MetaValue 总和大小不能超过 1024 字节，MetaKey 必须以 `x-qn-meta-` 作为前缀
-            optional: true
+            optional: omitempty
           - field_name: custom_vars
             key: customVars
             type: string_map
             documentation: 用户自定义变量
-            optional: true
+            optional: omitempty
         name: ObjectInfo
         documentation: 新上传的对象的相关信息
 response:

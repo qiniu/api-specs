@@ -23,7 +23,7 @@ request:
         type: string
         documentation: 指定抓取 URL 请求用的 HOST 参数
         encode: url_safe_base64
-        optional: true
+        optional: omitempty
 response:
   body:
     json:

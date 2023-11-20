@@ -11,7 +11,7 @@ request:
           key: key
           documentation: 对象名称，如果不传入，则通过上传策略中的 `saveKey` 字段决定，如果 `saveKey` 也没有置顶，则使用对象的哈希值
           type: string
-          optional: true
+          optional: omitempty
         - field_name: upload_token
           key: token
           documentation: 上传凭证
@@ -21,7 +21,7 @@ request:
           key: crc32
           documentation: 上传内容的 CRC32 校验码，如果指定此值，则七牛服务器会使用此值进行内容检验
           type: integer
-          optional: true
+          optional: omitempty
         - field_name: file
           key: file
           documentation: 上传文件的内容
