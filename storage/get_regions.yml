@@ -1,0 +1,32 @@
+method: get
+service_names:
+  - uc
+base_path: /regions
+documentation: 获取所有区域信息
+response:
+  body:
+    json:
+      struct:
+        name: RegionsInfo
+        documentation: 所有区域信息
+        fields:
+          - field_name: regions
+            key: regions
+            documentation: 区域列表
+            type:
+              array:
+                name: Regions
+                documentation: 区域列表
+                type:
+                  struct:
+                    name: Region
+                    documentation: 区域信息
+                    fields:
+                      - field_name: id
+                        key: id
+                        type: string
+                        documentation: 区域 ID
+                      - field_name: description
+                        key: description
+                        type: string
+                        documentation: 区域描述信息
