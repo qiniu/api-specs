@@ -15,6 +15,7 @@ API 描述信息
 | `documentation` | `String`                 | API 文档     |
 | `base_path`     | `String`                 | URL 基础路径 |
 | `path_prefix`   | `String`                 | URL 路径后缀 |
+| `command`       | `String`                 | URL 查询命令 |
 | `request`       | `ApiRequestDescription`  | 调用参数     |
 | `response`      | `ApiResponseDescription` | 响应参数     |
 

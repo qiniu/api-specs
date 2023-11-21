@@ -1,0 +1,66 @@
+method: get
+service_names:
+  - uc
+base_path: /buckets
+command: apiVersion=v4
+documentation: 获取拥有的所有存储空间列表
+request:
+  authorization: qiniu
+  query_names:
+    - field_name: region
+      query_name: region
+      query_type: string
+      documentation: 区域 ID
+      optional: omitempty
+    - field_name: limit
+      query_name: limit
+      query_type: string
+      documentation: 分页大小。默认20，取值范围 1～100。
+      optional: omitempty
+    - field_name: marker
+      query_name: marker
+      query_type: string
+      documentation: 列举开始的空间标识
+      optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        name: BucketsResultV4
+        documentation: 返回所有存储空间结果
+        fields:
+          - field_name: next_marker
+            key: nextMarker
+            type: string
+            documentation: 下一页开始的空间标识
+          - field_name: is_truncated
+            key: isTruncated
+            type: boolean
+            documentation: 是否所有的结果都已经返回
+          - field_name: buckets
+            key: buckets
+            type:
+              array:
+                name: BucketsV4
+                documentation: 存储空间列表
+                type:
+                  struct:
+                    name: BucketV4
+                    documentation: 存储空间信息
+                    fields:
+                      - field_name: name
+                        key: name
+                        type: string
+                        documentation: 空间名称
+                      - field_name: region
+                        key: region
+                        type: string
+                        documentation: 空间区域 ID
+                      - field_name: private
+                        key: private
+                        type: boolean
+                        documentation: 空间是否私有
+                      - field_name: created_time
+                        key: ctime
+                        type: string
+                        documentation: 空间创建时间
