@@ -1,0 +1,22 @@
+method: put
+service_names:
+  - uc
+base_path: /buckets
+documentation: 设置空间备注
+command: remark
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: bucket
+        type: string
+        documentation: 空间名称
+        service_bucket: plain_text
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: remark
+            key: remark
+            type: string
+            documentation: 空间备注信息, 字符长度不能超过 100, 允许为空
