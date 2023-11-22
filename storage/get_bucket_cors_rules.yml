@@ -1,0 +1,65 @@
+method: get
+service_names:
+  - uc
+base_path: /corsRules/get
+documentation: 设置空间的跨域规则
+request:
+  authorization: qiniu
+  idempotent: always
+  path_params:
+    named:
+      - field_name: bucket
+        type: string
+        documentation: 指定空间名称
+        service_bucket: plain_text
+response:
+  body:
+    json:
+      array:
+        name: CorsRules
+        documentation: 跨域规则列表
+        type:
+          struct:
+            name: CorsRule
+            documentation: 跨域规则
+            fields:
+              - field_name: allowed_origin
+                key: allowed_origin
+                documentation: 允许的域名。必填；支持通配符 * ；*表示全部匹配；只有第一个 * 生效；需要设置 "Scheme"；大小写敏感
+                type:
+                  array:
+                    name: AllowedOriginHosts
+                    documentation: 允许的域名列表
+                    type: string
+              - field_name: allowed_method
+                key: allowed_method
+                documentation: 允许的方法。必填；不支持通配符；大小写不敏感；
+                type:
+                  array:
+                    name: AllowedMethods
+                    documentation: 允许的方法列表
+                    type: string
+              - field_name: allowed_header
+                key: allowed_header
+                documentaiton: 允许的 header。选填；支持通配符*，但只能是单独的*，表示允许全部header，其他*不生效；空则不允许任何header；大小写不敏感；
+                optional: omitempty
+                type:
+                  array:
+                    name: AllowedHeaders
+                    documentation: 允许的 Header 列表
+                    type: string
+              - field_name: exposed_header
+                key: exposed_header
+                documentation: 选填；不支持通配符；X-Log, X-Reqid 是默认会暴露的两个 header；其他的 header 如果没有设置，则不会暴露；大小写不敏感；
+                optional: omitempty
+                type:
+                  array:
+                    name: ExposedHeaders
+                    documentation: 暴露的 Header 列表
+                    type: string
+              - field_name: max_age
+                key: max_age
+                type: integer
+                documentation: 结果可以缓存的时间。选填；空则不缓存
+                optional: omitempty
+
