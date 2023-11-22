@@ -1,0 +1,18 @@
+method: post
+service_names:
+  - uc
+base_path: /maxAge
+documentation: "设置存储空间的 cache-control: max-age 响应头"
+request:
+  authorization: qiniu
+  query_names:
+    - query_name: bucket
+      field_name: bucket
+      query_type: string
+      documentation: 空间名称
+      service_bucket: plain_text
+    - query_name: maxAge
+      field_name: max_age
+      query_type: integer
+      documentation: maxAge 为 0 或者负数表示为默认值（31536000）
+      optional: keepempty
