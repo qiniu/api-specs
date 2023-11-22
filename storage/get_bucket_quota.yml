@@ -1,0 +1,28 @@
+method: post
+service_names:
+  - uc
+base_path: /getbucketquota
+documentation: 获取用户存储空间配额限制
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: bucket
+        type: string
+        documentation: 指定存储空间
+        service_bucket: plain_text
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: size
+            key: size
+            type: integer
+            documentation: 空间存储量配额
+            optional: omitempty
+          - field_name: count
+            key: count
+            type: integer
+            documentation: 空间文件数配额
+            optional: omitempty

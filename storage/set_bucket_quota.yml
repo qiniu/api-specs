@@ -1,0 +1,23 @@
+method: post
+service_names:
+  - uc
+base_path: /setbucketquota
+documentation: 设置用户存储空间配额限制
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: bucket
+        type: string
+        documentation: 指定存储空间
+        service_bucket: plain_text
+      - path_segment: size
+        field_name: size
+        type: integer
+        documentation: 空间存储量配额，参数传入 0 或不传表示不更改当前配置，传入 -1 表示取消限额
+        optional: omitempty
+      - path_segment: count
+        field_name: count
+        type: integer
+        documentation: 空间文件数配额，参数传入 0 或不传表示不更改当前配置，传入 -1 表示取消限额
+        optional: omitempty
