@@ -1,0 +1,18 @@
+method: post
+service_names:
+  - uc
+base_path: /accessMode
+documentation: 设置存储空间的原图保护
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: bucket
+        type: string
+        documentation: 空间名称
+        service_bucket: plain_text
+      - path_segment: mode
+        field_name: mode
+        type: integer
+        documentation: 1 表示开启原图保护，0 表示关闭原图保护
+        optional: keepempty
