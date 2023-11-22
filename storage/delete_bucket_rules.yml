@@ -1,0 +1,19 @@
+method: post
+service_names:
+  - uc
+base_path: /rules/delete
+documentation: 删除空间规则
+request:
+  authorization: qiniu
+  body:
+    form_urlencoded:
+      fields:
+        - field_name: bucket
+          key: bucket
+          documentation: 空间名称
+          type: string
+          service_bucket: plain_text
+        - field_name: name
+          key: name
+          documentation: 要删除的规则名称
+          type: string
