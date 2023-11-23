@@ -28,6 +28,11 @@ request:
         type: integer
         documentation: 指定文件上传后在设置的 toDeepArchiveAfterDays 转换到深度归档存储类型， 设置为 -1 表示取消已设置的转深度归档存储的生命周期规则
         optional: omitempty
+      - path_segment: toArchiveIRAfterDays
+        field_name: to_archive_ir_after_days
+        type: integer
+        documentation: 指定文件上传后在设置的 toArchiveIRAfterDays 转换到归档直读存储类型， 设置为 -1 表示取消已设置的转归档直读存储的生命周期规则
+        optional: omitempty
       - path_segment: deleteAfterDays
         field_name: delete_after_days
         type: integer
