@@ -42,7 +42,6 @@ API 调用参数
 | `form_urlencoded`     | `FormUrlencodedRequestStruct`    | URL 编码表单调用（无法上传二进制数据） |
 | `multipart_form_data` | `MultipartFormDataRequestStruct` | 复合表单调用（可以上传二进制数据）     |
 | `binary_data`         | 无                               | 二进制数据                             |
-| `plain_text`          | 无                               | 文本数据                               |
 
 #### **`ApiResponseDescription`**
 
