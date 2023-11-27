@@ -4,6 +4,7 @@ service_names:
 base_path: /sisyphus/fetch
 documentation: 查询异步抓取任务
 request:
+  authorization: qiniu
   query_names:
     - field_name: id
       query_name: id

@@ -3,6 +3,8 @@ service_names:
   - uc
 base_path: /regions
 documentation: 获取所有区域信息
+request:
+  authorization: qiniu
 response:
   body:
     json:
