@@ -29,12 +29,12 @@ request:
           optional: omitempty
         - field_name: to_ia_after_days
           key: to_line_after_days
-          documentation: 指定文件上传多少天后转低频存储。指定为 0 表示不转低频存储，小于 0 表示上传的文件立即变低频存储
+          documentation: 指定文件上传多少天后转低频存储。指定为 0 表示不转低频存储
           type: integer
           optional: omitempty
         - field_name: to_archive_after_days
           key: to_archive_after_days
-          documentation: 指定文件上传多少天后转归档存储。指定为 0 表示不转归档存储，小于 0 表示上传的文件立即变归档存储
+          documentation: 指定文件上传多少天后转归档存储。指定为 0 表示不转归档存储
           type: integer
           optional: omitempty
         - field_name: to_deep_archive_after_days
@@ -42,3 +42,9 @@ request:
           documentation: 指定文件上传多少天后转深度归档存储。指定为 0 表示不转深度归档存储
           type: integer
           optional: omitempty
+        - field_name: to_archive_ir_after_days
+          key: to_archive_ir_after_days
+          documentation: 指定文件上传多少天后转归档直读存储。指定为 0 表示不转归档直读存储
+          type: integer
+          optional: omitempty
+

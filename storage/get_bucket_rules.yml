@@ -33,22 +33,27 @@ response:
                 key: delete_after_days
                 documentation: 上传文件多少天后删除
                 type: integer
-                optional: keepempty
+                optional: omitempty
               - field_name: to_ia_after_days
                 key: to_line_after_days
                 documentation: 文件上传多少天后转低频存储
                 type: integer
-                optional: keepempty
+                optional: omitempty
               - field_name: to_archive_after_days
                 key: to_archive_after_days
                 documentation: 文件上传多少天后转归档存储
                 type: integer
-                optional: keepempty
+                optional: omitempty
               - field_name: to_deep_archive_after_days
                 key: to_deep_archive_after_days
                 documentation: 文件上传多少天后转深度归档存储
                 type: integer
-                optional: keepempty
+                optional: omitempty
+              - field_name: to_archive_ir_after_days
+                key: to_archive_ir_after_days
+                documentation: 文件上传多少天后转归档直读存储
+                type: integer
+                optional: omitempty
               - field_name: created_time
                 key: ctime
                 type: string
