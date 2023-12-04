@@ -14,7 +14,7 @@ request:
       optional: omitempty
     - field_name: limit
       query_name: limit
-      query_type: string
+      query_type: integer
       documentation: 分页大小。默认20，取值范围 1～100。
       optional: omitempty
     - field_name: marker
