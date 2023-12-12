@@ -8,16 +8,18 @@
 
 API 描述信息
 
-| 字段名称        | 类型                     | 描述         |
-| --------------- | ------------------------ | ------------ |
-| `method`        | `Method`                 | HTTP 方法    |
-| `service_names` | `[ServiceName]`          | 七牛服务名称 |
-| `documentation` | `String`                 | API 文档     |
-| `base_path`     | `String`                 | URL 基础路径 |
-| `path_prefix`   | `String`                 | URL 路径后缀 |
-| `command`       | `String`                 | URL 查询命令 |
-| `request`       | `ApiRequestDescription`  | 调用参数     |
-| `response`      | `ApiResponseDescription` | 响应参数     |
+| 字段名称           | 类型                     | 描述         |
+| ----------------- | ------------------------ | ------------ |
+| `camel_case_name` | `String`                 | 驼峰命名     |
+| `snake_case_name` | `String`                 | 下划线命名   |
+| `method`          | `Method`                 | HTTP 方法    |
+| `service_names`   | `[ServiceName]`          | 七牛服务名称 |
+| `documentation`   | `String`                 | API 文档     |
+| `base_path`       | `String`                 | URL 基础路径 |
+| `path_prefix`     | `String`                 | URL 路径后缀 |
+| `command`         | `String`                 | URL 查询命令 |
+| `request`         | `ApiRequestDescription`  | 调用参数     |
+| `response`        | `ApiResponseDescription` | 响应参数     |
 
 #### **`ApiRequestDescription`**
 
@@ -143,6 +145,8 @@ URL 路径有名请求参数
 | --------------- | ---------------------- | --------------------------------------------------------- |
 | `path_segment`  | `Option<String>`       | URL 路径段落，如果为空，则表示参数直接追加在 URL 路径末尾 |
 | `field_name`    | `String`               | URL 路径参数名称                                          |
+| `field_camel_case_name` | `String`       | URL 路径参数驼峰命名     |
+| `field_snake_case_name` | `String`       | URL 路径参数下划线命名   |
 | `type`          | `StringLikeType`       | URL 路径参数类型                                          |
 | `documentation` | `String`               | URL 路径参数文档                                          |
 | `encode`        | `Option<EncodeType>`   | URL 路径参数编码方式，如果为空，表示直接转码成字符串      |
@@ -155,6 +159,8 @@ URL 路径自由请求参数
 | 字段名称             | 类型                 | 描述                                                   |
 | -------------------- | -------------------- | ------------------------------------------------------ |
 | `field_name`         | `String`             | URL 路径参数名称                                       |
+| `field_camel_case_name`  | `String`         | URL 路径参数驼峰命名                                    |
+| `field_snake_case_name`  | `String`         | URL 路径参数下划线命名                                  |
 | `documentation`      | `String`             | URL 路径参数文档                                       |
 | `encode_param_key`   | `Option<EncodeType>` | URL 路径参数键编码方式，如果为空，表示直接转码成字符串 |
 | `encode_param_value` | `Option<EncodeType>` | URL 路径参数值编码方式，如果为空，表示直接转码成字符串 |
@@ -175,6 +181,8 @@ HTTP 头参数信息
 | 字段名称        | 类型     | 描述            |
 | --------------- | -------- | --------------- |
 | `field_name`    | `String` | HTTP 头参数名称 |
+| `field_camel_case_name`  | `String` | HTTP 头参数驼峰命名  |
+| `field_snake_case_name`  | `String` | HTTP 头参数下划线命名 |
 | `header_name`   | `String` | HTTP 头名称     |
 | `documentation` | `String` | HTTP 头参数文档 |
 | `optional`      | `Option<OptionalType>` | HTTP 头参数是否可选，如果为空，则表示必填      |
@@ -186,6 +194,8 @@ URL 查询请求参数信息
 | 字段名称        | 类型             | 描述             |
 | --------------- | ---------------- | ---------------- |
 | `field_name`    | `String`         | 参数名称         |
+| `field_camel_case_name`  | `String` | URL 路径参数驼峰命名 |
+| `field_snake_case_name`  | `String` | URL 路径参数下划线命名 |
 | `query_name`    | `String`         | URL 查询参数名称 |
 | `documentation` | `String`         | URL 查询参数文档 |
 | `query_type`    | `StringLikeType` | URL 查询参数类型 |
@@ -206,6 +216,8 @@ URL 编码表单请求字段
 | 字段名称        | 类型             | 描述                             |
 | --------------- | ---------------- | -------------------------------- |
 | `field_name`    | `String`         | URL 编码表单字段名称             |
+| `field_camel_case_name`  | `String` | URL 编码表单字段驼峰命名 |
+| `field_snake_case_name`  | `String` | URL 编码表单字段下划线命名 |
 | `key`           | `String`         | URL 编码表单参数名称             |
 | `documentation` | `String`         | URL 编码表单参数文档             |
 | `type`          | `StringLikeType` | URL 编码表单参数类型             |
@@ -228,6 +240,8 @@ URL 编码表单请求字段
 | 字段名称        | 类型                           | 描述             |
 | --------------- | ------------------------------ | ---------------- |
 | `field_name`    | `String`                       | 复合表单字段名称 |
+| `field_camel_case_name`  | `String` | 复合表单字段驼峰命名 |
+| `field_snake_case_name`  | `String` | 复合表单字段下划线命名 |
 | `key`           | `String`                       | 复合表单参数名称 |
 | `documentation` | `String`                       | 复合表单参数文档 |
 | `type`          | `MultipartFormDataRequestType` | 复合表单参数类型 |
@@ -240,6 +254,8 @@ URL 编码表单请求字段
 | 字段名称        | 类型     | 描述             |
 | --------------- | -------- | ---------------- |
 | `field_name`    | `String` | 复合表单字段名称 |
+| `field_camel_case_name`  | `String` | 复合表单字段驼峰命名 |
+| `field_snake_case_name`  | `String` | 复合表单字段下划线命名 |
 | `documentation` | `String` | 复合表单参数文档 |
 
 #### **`MultipartFormDataRequestType`** 枚举类型
@@ -274,6 +290,8 @@ JSON 数组字段信息
 | 字段名称        | 类型       | 描述              |
 | --------------- | ---------- | ----------------- |
 | `name`          | `String`   | JSON 数组名称     |
+| `camel_case_name`  | `String` | JSON 数组驼峰命名 |
+| `snake_case_name`  | `String` | JSON 数组下划线命名 |
 | `documentation` | `String`   | JSON 数组参数文档 |
 | `type`          | `JsonType` | JSON 数组类型     |
 
@@ -284,6 +302,8 @@ JSON 结构体
 | 字段名称        | 类型          | 描述                |
 | --------------- | ------------- | ------------------- |
 | `name`          | `String`      | JSON 结构体名称     |
+| `camel_case_name`  | `String` | JSON 结构体驼峰命名 |
+| `snake_case_name`  | `String` | JSON 结构体下划线命名 |
 | `documentation` | `String`      | JSON 结构体参数文档 |
 | `fields`        | `[JsonField]` | JSON 字段列表       |
 
@@ -294,6 +314,8 @@ JSON 结构体字段
 | 字段名称        | 类型                    | 描述                  |
 | --------------- | ----------------------- | --------------------- |
 | `field_name`    | `String`                | JSON 字段名称         |
+| `field_camel_case_name`  | `String` | JSON 字段驼峰命名 |
+| `field_snake_case_name`  | `String` | JSON 字段下划线命名 |
 | `key`           | `String`                | JSON 字段参数名称     |
 | `documentation` | `String`                | JSON 字段参数文档     |
 | `type`          | `JsonType`              | JSON 字段类型         |

@@ -1,3 +1,4 @@
+camel_case_name: GetBucketCORSRules
 method: get
 service_names:
   - uc
@@ -17,10 +18,12 @@ response:
     json:
       array:
         name: CorsRules
+        camel_case_name: CORSRules
         documentation: 跨域规则列表
         type:
           struct:
             name: CorsRule
+            camel_case_name: CORSRule
             documentation: 跨域规则
             fields:
               - field_name: allowed_origin
