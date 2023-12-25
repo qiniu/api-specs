@@ -43,7 +43,7 @@ response:
             documentation: 后续上传接收地址
           - field_name: expired_at
             key: expired_at
-            type: string
+            type: integer
             documentation: "`ctx` 过期时间"
         name: ChunkInfo
         documentation: 返回下一片数据的上传信息
