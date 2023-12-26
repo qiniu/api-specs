@@ -79,6 +79,7 @@ response:
                       key: fsize
                       documentation: 对象大小，单位为字节
                       type: integer
+                      optional: omitempty
                     - field_name: mime_type
                       key: mimeType
                       documentation: 对象 MIME 类型

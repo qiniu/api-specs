@@ -58,6 +58,7 @@ response:
                         key: size
                         type: integer
                         documentation: 分片大小
+                        optional: omitempty
                       - field_name: etag
                         key: etag
                         type: string

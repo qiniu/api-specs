@@ -10,6 +10,7 @@ request:
       - field_name: size
         type: integer
         documentation: 对象大小
+        optional: keepempty
       - field_name: object_name
         path_segment: key
         type: string
