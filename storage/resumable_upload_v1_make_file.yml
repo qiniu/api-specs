@@ -16,7 +16,7 @@ request:
         type: string
         documentation: 对象名称
         encode: url_safe_base64
-        optional: omitempty
+        optional: nullable
       - field_name: file_name
         path_segment: fname
         type: string
