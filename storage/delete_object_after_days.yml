@@ -16,4 +16,4 @@ request:
       - field_name: delete_after_days
         type: integer
         documentation: 指定文件上传后在设置的 DeleteAfterDays 过期删除，删除后不可恢复，设置为 0 表示取消已设置的过期删除的生命周期规则
-        optional: omitempty
+        optional: keepempty
