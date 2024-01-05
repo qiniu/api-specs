@@ -26,25 +26,25 @@ request:
           key: delete_after_days
           documentation: 指定上传文件多少天后删除，指定为 0 表示不删除，大于 0 表示多少天后删除
           type: integer
-          optional: omitempty
+          optional: keepempty
         - field_name: to_ia_after_days
           key: to_line_after_days
           documentation: 指定文件上传多少天后转低频存储。指定为 0 表示不转低频存储
           type: integer
-          optional: omitempty
+          optional: keepempty
         - field_name: to_archive_after_days
           key: to_archive_after_days
           documentation: 指定文件上传多少天后转归档存储。指定为 0 表示不转归档存储
           type: integer
-          optional: omitempty
+          optional: keepempty
         - field_name: to_deep_archive_after_days
           key: to_deep_archive_after_days
           documentation: 指定文件上传多少天后转深度归档存储。指定为 0 表示不转深度归档存储
           type: integer
-          optional: omitempty
+          optional: keepempty
         - field_name: to_archive_ir_after_days
           key: to_archive_ir_after_days
           documentation: 指定文件上传多少天后转归档直读存储。指定为 0 表示不转归档直读存储
           type: integer
-          optional: omitempty
+          optional: keepempty
 
