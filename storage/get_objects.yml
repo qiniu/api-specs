@@ -47,7 +47,7 @@ response:
             type: string
             optional: omitempty
           - field_name: common_prefixes
-            key: common_prefixes
+            key: commonPrefixes
             documentation: 公共前缀的数组，如没有指定 delimiter 参数则不返回
             type:
               array:
