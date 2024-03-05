@@ -200,6 +200,7 @@ URL 查询请求参数信息
 | `query_name`    | `String`         | URL 查询参数名称 |
 | `documentation` | `String`         | URL 查询参数文档 |
 | `query_type`    | `StringLikeType` | URL 查询参数类型 |
+| `multiple`      | `bool`           | URL 查询参数是否可以有多个值 |
 | `optional`      | `Option<OptionalType>` | URL 查询参数是否可选，如果为空，则表示必填      |
 
 #### **`FormUrlencodedRequestStruct`**
