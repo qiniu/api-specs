@@ -27,6 +27,7 @@ request:
             key: key
             type: string
             documentation: 对象名称，如果不传，则默认为文件的哈希值
+            service_object: plain_text
             optional: omitempty
           - field_name: md5
             key: md5

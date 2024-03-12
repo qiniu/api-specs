@@ -129,15 +129,24 @@ HTTP 方法
 | `omitempty` | 无     | 如果用户不传值，则该字段省略   |
 | `nullable`  | 无     | 如果用户不传值，则该字段省略，但如果用户传值，即使是空值也会发送   |
 
-#### **`ServiceBucketType`** 存储空间字段类型
+#### **`ServiceBucketType`** 存储空间名称字段类型
 
-存储空间字段类型
+存储空间名称字段类型
 
 | 字段名称  | 值类型 | 描述       |
 | --------- | ------ | ---------- |
 | `plain_text` | 无     | 该值为存储空间名称   |
 | `entry` | 无     | 该值格式为 `UrlSafeBase64("$bucket:$key")`   |
 | `upload_token`  | 无     | 该值为上传凭证，内部包含存储空间信息   |
+
+#### **`ServiceObjectType`** 对象名称字段类型
+
+对象名称字段类型
+
+| 字段名称  | 值类型 | 描述       |
+| --------- | ------ | ---------- |
+| `plain_text` | 无     | 该值为对象名称   |
+| `entry` | 无     | 该值格式为 `UrlSafeBase64("$bucket:$key")`   |
 
 #### **`PathParams`**
 
@@ -163,6 +172,7 @@ URL 路径有名请求参数
 | `encode`        | `Option<EncodeType>`   | URL 路径参数编码方式，如果为空，表示直接转码成字符串      |
 | `optional`      | `Option<OptionalType>` | URL 路径参数是否可选，如果为空，则表示必填      |
 | `service_bucket` | `Option<ServiceBucketType>` | URL 路径参数是否是空间名称，如果为空，则表示不是，如果不为空，则填写格式      |
+| `service_object` | `Option<ServiceObjectType>` | URL 路径参数是否是对象名称，如果为空，则表示不是，如果不为空，则填写格式      |
 
 #### **`FreePathParams`**
 
@@ -214,6 +224,7 @@ URL 查询请求参数信息
 | `multiple`      | `bool`           | URL 查询参数是否可以有多个值 |
 | `optional`      | `Option<OptionalType>` | URL 查询参数是否可选，如果为空，则表示必填      |
 | `service_bucket` | `Option<ServiceBucketType>` | URL 查询参数是否是空间名称，如果为空，则表示不是，如果不为空，则填写格式      |
+| `service_object` | `Option<ServiceObjectType>` | URL 查询参数是否是对象名称，如果为空，则表示不是，如果不为空，则填写格式      |
 
 #### **`FormUrlencodedRequestStruct`**
 
@@ -238,6 +249,7 @@ URL 编码表单请求字段
 | `multiple`      | `bool`           | URL 编码表单参数是否可以有多个值 |
 | `optional`      | `Option<OptionalType>` | URL 编码表单参数是否可选，如果为空，则表示必填      |
 | `service_bucket` | `Option<ServiceBucketType>` | URL 编码表单参数是否是空间名称，如果为空，则表示不是，如果不为空，则填写格式      |
+| `service_object` | `Option<ServiceObjectType>` | URL 编码表单参数是否是对象名称，如果为空，则表示不是，如果不为空，则填写格式      |
 
 #### **`MultipartFormDataRequestStruct`**
 
@@ -262,6 +274,7 @@ URL 编码表单请求字段
 | `type`          | `MultipartFormDataRequestType` | 复合表单参数类型 |
 | `optional`      | `Option<OptionalType>`         | 复合表单参数是否可选，如果为空，则表示必填      |
 | `service_bucket` | `Option<ServiceBucketType>` | 复合表单参数是否是空间名称，如果为空，则表示不是，如果不为空，则填写格式      |
+| `service_object` | `Option<ServiceObjectType>` | 复合表单参数是否是对象名称，如果为空，则表示不是，如果不为空，则填写格式      |
 
 #### **`FreeMultipartFormDataRequestFields`**
 
@@ -337,6 +350,7 @@ JSON 结构体字段
 | `type`          | `JsonType`              | JSON 字段类型         |
 | `optional`      | `Option<OptionalType>`  | JSON 字段是否可选，如果为空，则表示必填 |
 | `service_bucket` | `Option<ServiceBucketType>` | JSON 字段是否是空间名称，如果为空，则表示不是，如果不为空，则填写格式      |
+| `service_object` | `Option<ServiceObjectType>` | JSON 字段是否是对象名称，如果为空，则表示不是，如果不为空，则填写格式      |
 
 ## 联系我们
 

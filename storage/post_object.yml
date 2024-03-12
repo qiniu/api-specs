@@ -12,6 +12,7 @@ request:
           documentation: 对象名称，如果不传入，则通过上传策略中的 `saveKey` 字段决定，如果 `saveKey` 也没有置顶，则使用对象的哈希值
           type: string
           optional: nullable
+          service_object: plain_text
         - field_name: upload_token
           key: token
           documentation: 上传凭证

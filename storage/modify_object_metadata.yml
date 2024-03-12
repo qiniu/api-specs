@@ -13,6 +13,7 @@ request:
         documentation: 指定目标对象空间与目标对象名称，格式为 <目标对象空间>:<目标对象名称>
         encode: url_safe_base64
         service_bucket: entry
+        service_object: entry
       - path_segment: mime
         field_name: mime_type
         type: string
