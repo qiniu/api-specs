@@ -3,7 +3,7 @@ method: get
 service_names:
   - uc
 base_path: /corsRules/get
-documentation: 设置空间的跨域规则
+documentation: 获取空间的跨域规则
 request:
   authorization: qiniu
   idempotent: always
