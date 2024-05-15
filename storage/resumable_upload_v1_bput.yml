@@ -33,10 +33,12 @@ response:
             key: crc32
             type: integer
             documentation: 上传块 CRC32 值，客户可通过此字段对上传块的完整性进行校验
+            optional: keepempty
           - field_name: offset
             key: offset
             type: integer
             documentation: 下一个上传块在切割块中的偏移
+            optional: keepempty
           - field_name: host
             key: host
             type: string
