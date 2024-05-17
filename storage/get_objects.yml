@@ -95,6 +95,11 @@ response:
                       type: string
                       optional: omitempty
                     - field_name: restoring_status
+                      key: restoreStatus
+                      documentation: 归档存储文件的解冻状态，`2` 表示解冻完成，`1` 表示解冻中；归档文件冻结时，不返回该字段，仅对 stat 指令才有效
+                      type: integer
+                      optional: omitempty
+                    - field_name: status
                       key: status
                       documentation: 文件的存储状态，即禁用状态和启用状态间的的互相转换，`0` 表示启用，`1`表示禁用
                       type: integer
