@@ -109,6 +109,11 @@ response:
                       documentation: 对象 MD5 值，只有通过直传文件和追加文件 API 上传的文件，服务端确保有该字段返回
                       optional: omitempty
                       type: string
+                    - field_name: metadata
+                      key: x-qn-meta
+                      documentation: 对象存储元信息
+                      type: string_map
+                      optional: omitempty
                     - field_name: parts
                       key: parts
                       documentation: 每个分片的大小，如没有指定 need_parts 参数则不返回
