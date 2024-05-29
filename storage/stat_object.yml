@@ -41,6 +41,7 @@ response:
             key: type
             documentation: 对象存储类型，`0` 表示普通存储，`1` 表示低频存储，`2` 表示归档存储
             type: integer
+            optional: omitempty
           - field_name: put_time
             key: putTime
             documentation: 文件上传时间，UNIX 时间戳格式，单位为 100 纳秒
