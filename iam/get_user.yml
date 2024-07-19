@@ -1,0 +1,60 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/users
+documentation: 获取 IAM 子账号
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: IAM 子账号信息
+            type:
+              struct:
+                fields:
+                  - field_name: id
+                    key: id
+                    type: string
+                    documentation: 记录 ID
+                  - field_name: root_uid
+                    key: root_uid
+                    type: integer
+                    documentation: 根用户 uid
+                  - field_name: iuid
+                    key: iuid
+                    type: integer
+                    documentation: 子账号 uid
+                  - field_name: alias
+                    key: alias
+                    type: string
+                    documentation: 子账号别名
+                  - field_name: created_at
+                    key: created_at
+                    type: string
+                    documentation: 子账号创建时间
+                  - field_name: updated_at
+                    key: updated_at
+                    type: string
+                    documentation: 子账号上次更新时间
+                  - field_name: last_login_time
+                    key: last_login_time
+                    type: string
+                    documentation: 子账号上次更新时间
+                  - field_name: enabled
+                    key: enabled
+                    type: boolean
+                    documentation: 子账号是否启用
+                name: GetIamUserData
+                documentation: 返回的 IAM 子账号信息
+        name: GetIamUserResp
+        documentation: 返回的 IAM 子账号响应
+

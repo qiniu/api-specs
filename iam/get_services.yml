@@ -1,0 +1,33 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/services
+documentation: 查询 IAM 的服务列表
+request:
+  authorization: qiniu
+  query_names:
+    - field_name: page
+      query_name: page
+      query_type: integer
+      documentation: 分页页号，从 1 开始，默认 1
+      optional: omitempty
+    - field_name: page_size
+      query_name: page_size
+      query_type: integer
+      documentation: 分页大小，默认 20，最大 2000
+      optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: 服务列表信息
+            type:
+              array:
+                name: Services
+                type: string
+                documentation: 服务列表
+        name: GetServicesResp
+        documentation: 返回的服务列表响应

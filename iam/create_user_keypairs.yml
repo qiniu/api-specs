@@ -1,0 +1,52 @@
+method: post
+service_names:
+  - api
+base_path: /iam/v1/users
+path_suffix: /keypairs
+documentation: 创建 IAM 子账号密钥
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: IAM 子账号密钥信息
+            type:
+              struct:
+                fields:
+                  - field_name: id
+                    key: id
+                    type: string
+                    documentation: 记录 ID
+                  - field_name: access_key
+                    key: access_key
+                    type: string
+                    documentation: IAM 子账号 Access Key
+                  - field_name: secret_key
+                    key: secret_key
+                    type: string
+                    documentation: IAM 子账号 Secret Key
+                  - field_name: user_id
+                    key: user_id
+                    type: string
+                    documentation: 关联用户的记录 ID
+                  - field_name: created_at
+                    key: created_at
+                    type: string
+                    documentation: 密钥创建时间
+                  - field_name: enabled
+                    key: enabled
+                    type: boolean
+                    documentation: 密钥是否启用
+                name: CreatedIamUserKeyPairData
+                documentation: 返回的 IAM 子账号密钥信息
+        name: CreatedIamUserKeyPairResp
+        documentation: 返回的 IAM 子账号密钥响应

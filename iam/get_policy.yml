@@ -1,0 +1,88 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/policies
+documentation: 查询指定授权策略详情
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 授权策略别名
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: 授权策略信息
+            type:
+              struct:
+                fields:
+                  - field_name: id
+                    key: id
+                    type: string
+                    documentation: 记录 ID
+                  - field_name: root_uid
+                    key: root_uid
+                    type: integer
+                    documentation: 根用户 uid
+                  - field_name: alias
+                    key: alias
+                    type: string
+                    documentation: 授权策略别名
+                  - field_name: description
+                    key: description
+                    type: string
+                    documentation: 授权策略描述
+                  - field_name: enabled
+                    key: enabled
+                    type: boolean
+                    documentation: 授权策略是否启用
+                  - field_name: created_at
+                    key: created_at
+                    type: string
+                    documentation: 授权策略创建时间
+                  - field_name: updated_at
+                    key: updated_at
+                    type: string
+                    documentation: 授权策略上次更新时间
+                  - field_name: statement
+                    key: statement
+                    documentation: 授权策略规则集合
+                    type:
+                      array:
+                        type:
+                          struct:
+                            fields:
+                              - field_name: actions
+                                key: action
+                                documentation: 授权策略规则的操作集合
+                                type:
+                                  array:
+                                    type: string
+                                    name: Actions
+                                    documentation: 授权策略规则的操作集合
+                              - field_name: resources
+                                key: resource
+                                documentation: 授权策略规则的资源集合
+                                type:
+                                  array:
+                                    type: string
+                                    name: Resources
+                                    documentation: 授权策略规则的资源集合
+                              - field_name: effect
+                                key: effect
+                                type: string
+                                documentation: 授权策略规则的生效类型，允许访问或拒绝访问
+                            name: Statement
+                            documentation: 授权策略规则
+                        name: Statements
+                        documentation: 授权策略规则集合
+                name: GetPolicyData
+                documentation: 返回的授权策略信息
+        name: GetPolicyResp
+        documentation: 返回的授权策略响应
+

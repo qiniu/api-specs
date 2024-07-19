@@ -1,0 +1,56 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/groups
+path_suffix: /resources
+documentation: 列举用户分组指定服务操作下的可访问资源
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: groupAlias
+        type: string
+        documentation: 用户分组别名
+      - path_segment: services
+        field_name: service
+        type: string
+        documentation: 资源操作关联的服务
+      - path_segment: actions
+        field_name: actionAlias
+        type: string
+        documentation: 资源操作别名
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: 用户分组指定服务操作下的可访问资源列表信息
+            type:
+              array:
+                type:
+                  struct:
+                    fields:
+                      - field_name: allowed_resources
+                        key: allow
+                        documentation: 可用资源
+                        type:
+                          array:
+                            name: AllowedResources
+                            type: string
+                            documentation: 可用资源列表
+                      - field_name: denied_resources
+                        key: deny
+                        documentation: 禁用资源
+                        type:
+                          array:
+                            name: DeniedResources
+                            type: string
+                            documentation: 禁用资源列表
+                    name: GetGroupServiceActionResources
+                    documentation: 返回的用户分组指定服务操作下的可访问资源列表信息
+                name: GetGroupServiceActionResourcesData
+                documentation: 返回的用户分组指定服务操作下的可访问资源列表信息
+        name: GetGroupServiceActionResourcesResp
+        documentation: 返回的用户分组指定服务操作下的可访问资源列表响应

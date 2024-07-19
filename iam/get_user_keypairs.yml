@@ -1,0 +1,81 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/users
+path_suffix: /keypairs
+documentation: 列举 IAM 子账号密钥
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名
+  query_names:
+    - field_name: page
+      query_name: page
+      query_type: integer
+      documentation: 分页页号，从 1 开始，默认 1
+      optional: omitempty
+    - field_name: page_size
+      query_name: page_size
+      query_type: integer
+      documentation: 分页大小，默认 20，最大 2000
+      optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: IAM 子账号密钥信息
+            type:
+              struct:
+                fields:
+                  - key: count
+                    field_name: count
+                    documentation: IAM 子账号密钥数量
+                    type: integer
+                  - key: list
+                    field_name: list
+                    documentation: IAM 子账号密钥列表
+                    type:
+                      array:
+                        type:
+                          struct:
+                            fields:
+                              - field_name: id
+                                key: id
+                                type: string
+                                documentation: 记录 ID
+                              - field_name: access_key
+                                key: access_key
+                                type: string
+                                documentation: IAM 子账号 Access Key
+                              - field_name: secret_key
+                                key: secret_key
+                                type: string
+                                documentation: IAM 子账号 Secret Key
+                              - field_name: user_id
+                                key: user_id
+                                type: string
+                                documentation: 关联用户的记录 ID
+                              - field_name: created_at
+                                key: created_at
+                                type: string
+                                documentation: 密钥创建时间
+                              - field_name: enabled
+                                key: enabled
+                                type: boolean
+                                documentation: 密钥是否启用
+                            name: GetIamUserKeyPair
+                            documentation: 返回的 IAM 子账号密钥
+                        name: GetIamUserKeyPairs
+                        documentation: 返回的 IAM 子账号密钥列表
+                name: GetIamUserKeyPairsData
+                documentation: 返回的 IAM 子账号密钥列表信息
+        name: GetIamUserKeyPairsResp
+        documentation: 返回的 IAM 子账号密钥列表响应
+
+

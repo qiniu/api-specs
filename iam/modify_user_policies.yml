@@ -1,0 +1,27 @@
+method: patch
+service_names:
+  - api
+base_path: /iam/v1/users
+path_suffix: /policies
+documentation: 为子账号添加授权策略
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: policy_aliases
+            key: policy_aliases
+            documentation: 授权策略别名集合
+            type:
+              array:
+                name: PolicyAliases
+                type: string
+                documentation: 添加给用户的授权策略别名集合
+        name: AddedIamUserPoliciesParam
+        documentation: 为子账号添加授权策略参数

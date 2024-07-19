@@ -1,0 +1,28 @@
+method: post
+service_names:
+  - api
+base_path: /iam/v1/policies
+path_suffix: /users
+documentation: 重新分配用户给指定授权策略
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 授权策略分组别名
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: user_aliases
+            key: user_aliases
+            documentation: IAM 子账号别名集合
+            optional: omitempty
+            type:
+              array:
+                name: UserAliases
+                type: string
+                documentation: 为授权策略重新分配 IAM 子账号别名集合
+        name: UpdatedPolicyIamUsersParam
+        documentation: 为授权策略重新分配 IAM 子账号参数

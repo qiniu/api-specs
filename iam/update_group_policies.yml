@@ -1,0 +1,28 @@
+method: post
+service_names:
+  - api
+base_path: /iam/v1/groups
+path_suffix: /policies
+documentation: 为用户分组重新分配授权策略
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 用户分组别名
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: policy_aliases
+            key: policy_aliases
+            documentation: 授权策略别名集合
+            optional: omitempty
+            type:
+              array:
+                name: PolicyAliases
+                type: string
+                documentation: 为用户分组重新分配的授权策略别名集合
+        name: UpdatedGroupIamPoliciesParam
+        documentation: 为用户分组重新分配授权策略参数

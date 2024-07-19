@@ -1,0 +1,28 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/users
+path_suffix: /services
+documentation: 列举子账号可用服务
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: IAM 子账号可用服务信息
+            type:
+              array:
+                name: Services
+                type: string
+                documentation: 可用服务列表
+        name: GetIamUserAvailableServicesResp
+        documentation: 返回的 IAM 子账号可用服务列表响应

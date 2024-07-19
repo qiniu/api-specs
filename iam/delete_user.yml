@@ -1,0 +1,12 @@
+method: delete
+service_names:
+  - api
+base_path: /iam/v1/users
+documentation: 删除 IAM 子账号
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名

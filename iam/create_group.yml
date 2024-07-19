@@ -1,0 +1,67 @@
+method: post
+service_names:
+  - api
+base_path: /iam/v1/groups
+documentation: 新建用户分组
+request:
+  authorization: qiniu
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: alias
+            key: alias
+            type: string
+            documentation: 用户分组别名，由 `A-Za-z0-9` 组成
+            optional: omitempty
+          - field_name: description
+            key: description
+            type: string
+            documentation: 用户分组描述
+            optional: omitempty
+        name: CreateGroupParam
+        documentation: 创建用户分组参数
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: 用户分组信息
+            type:
+              struct:
+                fields:
+                  - field_name: id
+                    key: id
+                    type: string
+                    documentation: 记录 ID
+                  - field_name: root_uid
+                    key: root_uid
+                    type: integer
+                    documentation: 根用户 uid
+                  - field_name: alias
+                    key: alias
+                    type: string
+                    documentation: 用户分组别名
+                  - field_name: description
+                    key: description
+                    type: string
+                    documentation: 用户分组描述
+                  - field_name: enabled
+                    key: enabled
+                    type: boolean
+                    documentation: 用户分组是否启用
+                  - field_name: created_at
+                    key: created_at
+                    type: string
+                    documentation: 用户分组创建时间
+                  - field_name: updated_at
+                    key: updated_at
+                    type: string
+                    documentation: 用户分组上次更新时间
+                name: CreatedGroupData
+                documentation: 返回的用户分组信息
+        name: CreatedGroupResp
+        documentation: 返回的用户分组响应
+

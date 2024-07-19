@@ -1,0 +1,28 @@
+method: patch
+service_names:
+  - api
+base_path: /iam/v1/groups
+documentation: 更新用户分组信息
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 子账号别名
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: new_alias
+            key: alias
+            type: string
+            documentation: 新的用户分组别名，由 `A-Za-z0-9` 组成
+            optional: omitempty
+          - field_name: description
+            key: description
+            type: string
+            documentation: 用户分组描述
+            optional: omitempty
+        name: ModifyGroupParam
+        documentation: 修改用户分组参数

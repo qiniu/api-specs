@@ -1,0 +1,27 @@
+method: patch
+service_names:
+  - api
+base_path: /iam/v1/groups
+path_suffix: /users
+documentation: 添加 IAM 子账号到用户分组
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 用户分组别名
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: user_aliases
+            key: user_aliases
+            documentation: IAM 子账号别名集合
+            type:
+              array:
+                name: UserAliases
+                type: string
+                documentation: 添加给用户分组的 IAM 子账号别名集合
+        name: AddedGroupIamUsersParam
+        documentation: 为用户分组添加 IAM 子账号参数

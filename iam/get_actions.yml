@@ -1,0 +1,86 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/actions
+documentation: 查询 IAM 的操作
+request:
+  authorization: qiniu
+  query_names:
+    - field_name: service
+      query_name: service
+      query_type: string
+      documentation: 操作对应的服务别名
+      optional: omitempty
+    - field_name: page
+      query_name: page
+      query_type: integer
+      documentation: 分页页号，从 1 开始，默认 1
+      optional: omitempty
+    - field_name: page_size
+      query_name: page_size
+      query_type: integer
+      documentation: 分页大小，默认 20，最大 2000
+      optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: 接口操作信息
+            type:
+              struct:
+                fields:
+                  - key: count
+                    field_name: count
+                    documentation: 接口操作数量
+                    type: integer
+                  - key: list
+                    field_name: list
+                    documentation: 接口操作列表
+                    type:
+                      array:
+                        type:
+                          struct:
+                            fields:
+                              - field_name: id
+                                key: id
+                                type: string
+                                documentation: 记录 ID
+                              - field_name: name
+                                key: name
+                                type: string
+                                documentation: 接口操作名称
+                              - field_name: alias
+                                key: alias
+                                type: string
+                                documentation: 接口操作别名
+                              - field_name: service
+                                key: service
+                                type: string
+                                documentation: 接口操作对应的服务
+                              - field_name: scope
+                                key: scope
+                                type: integer
+                                documentation: "接口操作权限粒度，0: 操作级，不限制资源，1: 资源级，只能访问特定资源"
+                              - field_name: enabled
+                                key: enabled
+                                type: boolean
+                                documentation: 接口操作是否启用
+                              - field_name: created_at
+                                key: created_at
+                                type: string
+                                documentation: 接口操作创建时间
+                              - field_name: updated_at
+                                key: updated_at
+                                type: string
+                                documentation: 接口操作上次更新时间
+                            name: GetAction
+                            documentation: 返回的接口操作
+                        name: GetActions
+                        documentation: 返回的接口操作列表
+                name: GetActionsData
+                documentation: 返回的接口操作列表信息
+        name: GetActionsResp
+        documentation: 返回的接口操作列表响应

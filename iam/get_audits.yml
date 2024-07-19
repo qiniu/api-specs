@@ -1,0 +1,127 @@
+method: get
+service_names:
+  - api
+base_path: /iam/v1/audits
+documentation: 查询审计日志列表
+request:
+  authorization: qiniu
+  query_names:
+    - field_name: iuid
+      query_name: iuid
+      query_type: integer
+      documentation: IAM 子账号 UID
+      optional: omitempty
+    - field_name: service
+      query_name: service
+      query_type: string
+      documentation: 操作对应的服务别名
+      optional: omitempty
+    - field_name: action
+      query_name: action
+      query_type: string
+      documentation: 操作别名
+      optional: omitempty
+    - field_name: resource
+      query_name: resource
+      query_type: string
+      documentation: 操作别名
+      optional: omitempty
+    - field_name: start_time
+      query_name: start_time
+      query_type: string
+      documentation: 操作开始时间
+      optional: omitempty
+    - field_name: end_time
+      query_name: end_time
+      query_type: string
+      documentation: 操作截止时间
+      optional: omitempty
+    - field_name: marker
+      query_name: marker
+      query_type: string
+      documentation: 下页标记
+      optional: omitempty
+    - field_name: limit
+      query_name: limit
+      query_type: integer
+      documentation: 分页大小，默认 20，最大 2000
+      optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: data
+            field_name: data
+            documentation: 审计日志信息
+            type:
+              struct:
+                fields:
+                  - key: marker
+                    field_name: marker
+                    documentation: 下页标记
+                    type: string
+                  - key: list
+                    field_name: list
+                    documentation: 审计日志列表
+                    type:
+                      array:
+                        type:
+                          struct:
+                            fields:
+                              - field_name: id
+                                key: id
+                                type: string
+                                documentation: 记录 ID
+                              - field_name: root_uid
+                                key: root_uid
+                                type: integer
+                                documentation: 根用户 uid
+                              - field_name: iuid
+                                key: iuid
+                                type: integer
+                                documentation: 子账号 uid
+                              - field_name: service
+                                key: service
+                                type: string
+                                documentation: 接口操作对应的服务
+                              - field_name: action
+                                key: action
+                                type: string
+                                documentation: 接口操作别名
+                              - field_name: created_at
+                                key: created_at
+                                type: string
+                                documentation: 日志创建时间
+                              - field_name: event_time
+                                key: event_time
+                                type: string
+                                documentation: 请求发生时间
+                              - field_name: duration_ms
+                                key: duration_ms
+                                type: integer
+                                documentation: 请求持续时间，毫秒
+                              - field_name: source_ip
+                                key: source_ip
+                                type: string
+                                documentation: 源 IP
+                              - field_name: user_event
+                                key: user_event
+                                type: string
+                                documentation: 用户代理
+                              - field_name: error_code
+                                key: error_code
+                                type: integer
+                                documentation: 错误码
+                              - field_name: error_message
+                                key: error_message
+                                type: string
+                                documentation: 错误消息
+                            name: GetAuditLog
+                            documentation: 返回的审计日志
+                        name: GetAuditLogs
+                        documentation: 返回的审计日志列表
+                name: GetAuditLogsData
+                documentation: 返回的审计日志列表信息
+        name: GetAuditLogsResp
+        documentation: 返回的审计日志列表响应

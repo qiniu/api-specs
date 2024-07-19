@@ -1,0 +1,28 @@
+method: post
+service_names:
+  - api
+base_path: /iam/v1/groups
+path_suffix: /users
+documentation: 为用户分组中重新分配 IAM 子账号
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 用户分组别名
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: user_aliases
+            key: user_aliases
+            documentation: IAM 子账号别名集合
+            optional: omitempty
+            type:
+              array:
+                name: UserAliases
+                type: string
+                documentation: 为用户分组重新分配 IAM 子账号别名集合
+        name: UpdatedGroupIamUsersParam
+        documentation: 为用户分组重新分配 IAM 子账号参数
