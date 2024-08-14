@@ -1,0 +1,88 @@
+method: get
+service_names:
+  - api
+base_path: /status/get/prefop
+documentation: 查询持久化数据处理命令的执行状态
+request:
+  authorization: qiniu
+  query_names:
+    - field_name: persistent_id
+      query_name: id
+      query_type: string
+      documentation: 持久化数据处理任务 ID
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: id
+            field_name: persistent_id
+            documentation: 持久化数据处理任务 ID
+            type: string
+          - key: code
+            field_name: code
+            documentation: 持久化数据处理任务状态码
+            type: integer
+          - key: desc
+            field_name: description
+            documentation: 与状态码相对应的详细描述
+            type: string
+          - key: inputKey
+            field_name: object_name
+            documentation: 源对象名称
+            type: string
+          - key: inputBucket
+            field_name: bucket_name
+            documentation: 源空间名称
+            type: string
+          - key: pipeline
+            field_name: pipeline
+            documentation: 云处理操作的处理队列
+            type: string
+          - key: reqid
+            field_name: request_id
+            documentation: 云处理请求的请求 ID
+            type: string
+          - key: items
+            field_name: items
+            documentation: 云处理操作列表
+            type:
+              array:
+                type:
+                  struct:
+                    fields:
+                      - key: cmd
+                        field_name: command
+                        documentation: 云操作命令
+                        type: string
+                      - key: code
+                        field_name: code
+                        documentation: 云操作状态码
+                        type: integer
+                      - key: desc
+                        field_name: description
+                        documentation: 与状态码相对应的详细描述
+                        type: string
+                      - key: error
+                        field_name: error
+                        documentation: 如果处理失败，该字段会给出失败的详细原因
+                        type: string
+                        optional: omitempty
+                      - key: hash
+                        field_name: hash
+                        documentation: 云处理结果保存在服务端的唯一标识
+                        type: string
+                      - key: key
+                        field_name: object_name
+                        documentation: 云处理结果的外链对象名称
+                        type: string
+                      - key: returnOld
+                        field_name: return_old
+                        documentation: 是否返回了旧的数据
+                        type: integer
+                    name: PfopTaskItem
+                    documentation: 返回的持久化数据处理任务中的云处理操作状态
+                name: PfopTaskItems
+                documentation: 返回的持久化数据处理任务中的云处理操作列表
+        name: PfopTask
+        documentation: 返回的持久化数据处理任务信息

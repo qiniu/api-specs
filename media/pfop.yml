@@ -1,0 +1,53 @@
+method: post
+service_names:
+  - api
+base_path: /pfop/
+documentation: 触发持久化数据处理命令
+request:
+  authorization: qiniu
+  body:
+    form_urlencoded:
+      fields:
+        - field_name: bucket_name
+          key: bucket
+          documentation: 空间名称
+          type: string
+        - field_name: object_name
+          key: key
+          documentation: 对象名称
+          type: string
+        - field_name: fops
+          key: fops
+          documentation: 数据处理命令列表，以 `;` 分隔，可以指定多个数据处理命令
+          type: string
+        - field_name: notify_url
+          key: notifyURL
+          documentation: 处理结果通知接收 URL
+          type: string
+          optional: omitempty
+        - field_name: force
+          key: force
+          documentation: 强制执行数据处理，设为 `1`，则可强制执行数据处理并覆盖原结果
+          type: integer
+          optional: omitempty
+        - field_name: type
+          key: type
+          documentation: 任务类型，支持 `0` 表示普通任务，`1` 表示闲时任务
+          type: integer
+          optional: omitempty
+        - field_name: pipeline
+          key: pipeline
+          documentation: 对列名，仅适用于普通任务
+          type: string
+          optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: persistentId
+            field_name: persistent_id
+            documentation: 持久化数据处理任务 ID
+            type: string
+        name: PfopID
+        documentation: 返回的持久化数据处理任务 ID
