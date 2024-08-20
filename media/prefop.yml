@@ -43,6 +43,11 @@ response:
             field_name: request_id
             documentation: 云处理请求的请求 ID
             type: string
+          - key: type
+            field_name: type
+            documentation: 任务类型，支持 `0` 表示普通任务，`1` 表示闲时任务
+            type: integer
+            optional: omitempty
           - key: items
             field_name: items
             documentation: 云处理操作列表
