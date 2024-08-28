@@ -48,6 +48,11 @@ response:
             documentation: 任务类型，支持 `0` 表示普通任务，`1` 表示闲时任务
             type: integer
             optional: omitempty
+          - key: creationDate
+            field_name: created_at
+            documentation: 任务创建时间
+            type: string
+            optional: omitempty
           - key: items
             field_name: items
             documentation: 云处理操作列表
