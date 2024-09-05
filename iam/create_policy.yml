@@ -14,6 +14,11 @@ request:
             type: string
             documentation: 授权策略别名，由 `A-Za-z0-9` 组成
             optional: omitempty
+          - field_name: edit_type
+            key: edit_type
+            type: integer
+            documentation: 1：是通过自定义 JSON 编辑的策略 2：是通过 UI 编辑的策略
+            optional: omitempty
           - field_name: description
             key: description
             type: string
@@ -29,7 +34,7 @@ request:
                     fields:
                       - field_name: actions
                         key: action
-                        documentation: 授权策略规则的操作集合
+                        documentation: 授权策略规则的操作集合，action 查询参考 action 接口，格式为 service/action_alias
                         type:
                           array:
                             type: string
@@ -37,7 +42,7 @@ request:
                             documentation: 授权策略规则的操作集合
                       - field_name: resources
                         key: resource
-                        documentation: 授权策略规则的资源集合
+                        documentation: 授权策略规则的资源集合，格式为 qrn:product:region:uid:[resource-type/]resource-id ；可以简写为 qrn:product:::resource-id
                         type:
                           array:
                             type: string
