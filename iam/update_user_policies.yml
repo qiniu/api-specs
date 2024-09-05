@@ -24,5 +24,5 @@ request:
                 name: PolicyAliases
                 type: string
                 documentation: 重新分配给用户的授权策略别名集合
-        name: UpdateIamUserPoliciesParam
+        name: UpdatedIamUserPoliciesParam
         documentation: 为子账号重新分配授权策略参数

@@ -23,5 +23,5 @@ request:
                 name: PolicyAliases
                 type: string
                 documentation: 添加给用户分组的授权策略别名集合
-        name: AddedGroupIamPoliciesParam
-        documentation: 为用户分组添加授权策略参数
+        name: ModifiedGroupIamPoliciesParam
+        documentation: 为用户分组修改授权策略参数

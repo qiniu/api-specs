@@ -23,5 +23,5 @@ request:
                 name: PolicyAliases
                 type: string
                 documentation: 添加给用户的授权策略别名集合
-        name: AddedIamUserPoliciesParam
-        documentation: 为子账号添加授权策略参数
+        name: ModifiedIamUserPoliciesParam
+        documentation: 为子账号修改授权策略参数

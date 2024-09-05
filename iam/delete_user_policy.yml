@@ -23,6 +23,6 @@ request:
                 name: PolicyAliases
                 type: string
                 documentation: 删除用户的授权策略别名集合
-        name: UpdateIamUserPoliciesParam
+        name: DeletedIamUserPoliciesParam
         documentation: 为子账号删除授权策略参数
 

@@ -24,5 +24,5 @@ request:
                 name: GroupAliases
                 type: string
                 documentation: 重新分配给用户的分组别名集合
-        name: UpdateIamUserGroupsParam
+        name: UpdatedIamUserGroupsParam
         documentation: 为用户重新分配分组参数

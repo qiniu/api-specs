@@ -24,7 +24,7 @@ request:
             type: string
             documentation: 子账号密码
             optional: omitempty
-        name: ModifyIamUserParam
+        name: ModifiedIamUserParam
         documentation: 修改 IAM 子账号参数
 response:
   body:

@@ -24,4 +24,4 @@ request:
                 type: string
                 documentation: 添加给用户分组的 IAM 子账号别名集合
         name: ModifiedGroupIamUsersParam
-        documentation: 为用户分组添加 IAM 子账号参数
+        documentation: 为用户分组修改 IAM 子账号参数

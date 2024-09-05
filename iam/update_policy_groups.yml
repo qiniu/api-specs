@@ -24,5 +24,5 @@ request:
                 name: GroupAliases
                 type: string
                 documentation: 重新分配给授权策略的分组别名集合
-        name: UpdatePolicyGroupsParam
+        name: UpdatedPolicyGroupsParam
         documentation: 为授权策略重新分配分组参数
