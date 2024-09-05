@@ -35,7 +35,7 @@ request:
                     fields:
                       - field_name: actions
                         key: action
-                        documentation: 授权策略规则的操作集合
+                        documentation: 授权策略规则的操作集合，action 查询参考 action 接口，格式为 service/action_alias
                         type:
                           array:
                             type: string
@@ -43,7 +43,7 @@ request:
                             documentation: 授权策略规则的操作集合
                       - field_name: resources
                         key: resource
-                        documentation: 授权策略规则的资源集合
+                        documentation: 授权策略规则的资源集合，格式为 qrn:product:region:uid:[resource-type/]resource-id ；可以简写为 qrn:product:::resource-id
                         type:
                           array:
                             type: string

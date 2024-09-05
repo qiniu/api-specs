@@ -19,6 +19,7 @@ request:
   body:
     json:
       struct:
+        name: VerifyShareParam
         fields:
           - field_name: extract_code
             key: extract_code
