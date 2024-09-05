@@ -1,0 +1,12 @@
+method: delete
+service_names:
+  - api
+base_path: /iam/v1/groups
+documentation: 删除用户分组
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: alias
+        type: string
+        documentation: 用户分组别名
