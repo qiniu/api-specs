@@ -1,0 +1,53 @@
+method: post
+service_names:
+  - api
+base_path: /shares
+path_suffix: /
+documentation: 创建目录分享
+request:
+  authorization: qiniu
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: bucket
+            key: bucket
+            type: string
+            documentation: 分享的空间名称
+          - field_name: prefix
+            key: prefix
+            type: string
+            documentation: 分享的对象名称前缀
+          - field_name: duration_seconds
+            key: duration_seconds
+            type: integer
+            documentation: 分享过期时间，单位为秒，最小 900 秒，最长 7200 秒
+          - field_name: extract_code
+            key: extract_code
+            type: string
+            documentation: 提取码，必须给出 6 个字符，仅大小写字母和数字
+          - field_name: permission
+            key: permission
+            type: string
+            documentation: 权限，目前仅支持 READONLY，未来会支持 READWRITE
+        name: NewShareParams
+        documentation: 新创建的分享参数
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: id
+            field_name: id
+            documentation: 分享 ID
+            type: string
+          - key: token
+            field_name: token
+            documentation: 分享 Token
+            type: string
+          - key: expires
+            field_name: expires
+            documentation: 分享过期时间，遵循 ISO8601 风格，使用 UTC 0 时区时间
+            type: string
+        name: NewShareInfo
+        documentation: 返回的分享信息

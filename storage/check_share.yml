@@ -1,0 +1,18 @@
+method: post
+service_names:
+  - api
+base_path: /shares
+path_suffix: /check
+documentation: 检查目录分享
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: share_id
+        type: string
+        documentation: 分享 ID
+  query_names:
+    - field_name: token
+      query_name: token
+      query_type: string
+      documentation: 分享 Token

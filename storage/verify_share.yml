@@ -1,0 +1,73 @@
+method: post
+service_names:
+  - api
+base_path: /shares
+path_suffix: /verify
+documentation: 校验目录分享并提取分享信息
+request:
+  authorization: qiniu
+  path_params:
+    named:
+      - field_name: share_id
+        type: string
+        documentation: 分享 ID
+  query_names:
+    - field_name: token
+      query_name: token
+      query_type: string
+      documentation: 分享 Token
+  body:
+    json:
+      struct:
+        fields:
+          - field_name: extract_code
+            key: extract_code
+            type: string
+            documentation: 提取码
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: endpoint
+            field_name: endpoint
+            documentation: 空间所用的 S3 域名
+            type: string
+          - key: region
+            field_name: region
+            documentation: 空间所在的 S3 区域 ID
+            type: string
+          - key: bucket_name
+            field_name: bucket_name
+            documentation: 空间名称
+            type: string
+          - key: bucket_id
+            field_name: bucket_id
+            documentation: 空间 ID
+            type: string
+          - key: prefix
+            field_name: prefix
+            documentation: 被分享的目录路径
+            type: string
+          - key: permission
+            field_name: permission
+            documentation: 权限，目前仅支持 READONLY，未来会支持 READWRITE
+            type: string
+          - key: expires
+            field_name: expires
+            documentation: 分享过期时间，遵循 ISO8601 风格，使用 UTC 0 时区时间
+            type: string
+          - key: federated_ak
+            field_name: federated_ak
+            documentation: S3 STS Access Key
+            type: string
+          - key: federated_sk
+            field_name: federated_sk
+            documentation: S3 STS Secret Key
+            type: string
+          - key: session_token
+            field_name: session_token
+            documentation: S3 STS Session Token
+            type: string
+        name: VerifiedShareInfo
+        documentation: 返回的经过校验的分享信息
