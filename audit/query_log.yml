@@ -49,7 +49,6 @@ response:
   body:
     json:
       struct:
-        name: QueryLogResp
         fields:
           - key: next_mark
             field_name: next_mark
