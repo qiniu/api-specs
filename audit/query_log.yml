@@ -1,0 +1,161 @@
+method: get
+service_names:
+  - api
+base_path: /audit/log-query
+documentation: 审计日志查询
+request:
+  authorization: qiniu
+  query_names:
+    - field_name: start_time
+      query_name: start_time
+      documentation: 检索日志的开始时间，日期格式按照 ISO8601 标准，并使用 UTC 时间
+      query_type: string
+    - field_name: end_time
+      query_name: end_time
+      documentation: 检索日志的结束时间，日期格式按照 ISO8601 标准，并使用 UTC 时间
+      query_type: string
+    - field_name: service_name
+      query_name: service_name
+      documentation: 服务名称，参考 https://developer.qiniu.com/af/12434/audit-log-events
+      query_type: string
+      optional: omitempty
+    - field_name: event_names
+      query_name: event_names
+      documentation: 事件名称集合，参考 https://developer.qiniu.com/af/12434/audit-log-events
+      query_type: string
+      multiple: true
+      optional: omitempty
+    - field_name: principal_id
+      query_name: principal_id
+      documentation: 请求者的 ID，参考 https://developer.qiniu.com/af/manual/12433/audit-log-object
+      query_type: string
+      optional: omitempty
+    - field_name: access_key_id
+      query_name: access_key_id
+      documentation: 请求身份所属的 AccessKey ID
+      query_type: string
+      optional: omitempty
+    - field_name: limit
+      query_name: limit
+      documentation: 允许返回的最大结果数目，取值范围：1~50，不传值默认为：20
+      query_type: string
+      optional: omitempty
+    - field_name: next_mark
+      query_name: next_mark
+      documentation: 用于请求下一页检索的结果
+      query_type: string
+      optional: omitempty
+response:
+  body:
+    json:
+      struct:
+        fields:
+          - key: next_mark
+            field_name: next_mark
+            documentation: 用于请求下一页检索的结果
+            type: string
+            optional: omitempty
+          - key: audit_log_infos
+            field_name: audit_log_infos
+            documentation: 日志集合
+            type:
+              array:
+                type:
+                  struct:
+                    fields:
+                      - field_name: event_id
+                        key: event_id
+                        type: string
+                        documentation: 日志 ID
+                      - field_name: event_type
+                        key: event_type
+                        type: string
+                        documentation: 事件类型，仅支持 UNKNOWN 表示未知，CONSOLE 表示控制台事件，API 表示 API 事件
+                      - field_name: event_time
+                        key: event_time
+                        type: string
+                        documentation: 事件发生时间（UTC 格式）
+                      - field_name: user_identity
+                        key: user_identity
+                        documentation: 请求者的身份信息
+                        type:
+                          struct:
+                            fields:
+                              - field_name: account_id
+                                key: account_id
+                                type: string
+                                documentation: 当前请求所属的七牛云账号 ID
+                              - field_name: principal_id
+                                key: principal_id
+                                type: string
+                                documentation: 当前请求者的 ID，需结合 principal_type 来确认请求者身份
+                              - field_name: principal_type
+                                key: principal_type
+                                type: string
+                                documentation: 请求者身份类型，仅支持 UNKNOWN 表示未知，ROOT_USER 表示七牛云账户 ID，IAM_USER 表示 IAM 子账户 ID，QINIU_ACCOUNT 表示当七牛云账号跨账号操作时，记录七牛云账号 ID
+                              - field_name: access_key_id
+                                key: access_key_id
+                                type: string
+                                documentation: 当前请求身份所属的 AccessKey ID
+                            name: UserIdentify
+                            documentation: 返回的请求者的身份信息
+                      - field_name: event_rw
+                        key: event_rw
+                        type: string
+                        documentation: 读写类型，仅支持 UNKNOWN 表示未知，READ 表示读，WRITE 表示写
+                      - field_name: service_name
+                        key: service_name
+                        type: string
+                        documentation: 服务名称
+                      - field_name: event_name
+                        key: event_name
+                        type: string
+                        documentation: 事件名称
+                      - field_name: source_ip
+                        key: source_ip
+                        type: string
+                        documentation: 源 IP 地址
+                      - field_name: user_agent
+                        key: user_agent
+                        type: string
+                        documentation: 客户端代理
+                      - field_name: resource_names
+                        key: resource_names
+                        documentation: 操作的资源名称列表
+                        type:
+                          array:
+                            type: string
+                            name: ResourceNames
+                            documentation: 返回的操作的资源名称列表
+                      - field_name: request_id
+                        key: request_id
+                        type: string
+                        documentation: 请求 ID
+                      - field_name: request_url
+                        key: request_url
+                        type: string
+                        documentation: 请求 URL
+                      - field_name: request_params
+                        key: request_params
+                        type: string
+                        documentation: 请求的输入参数
+                      - field_name: response_data
+                        key: response_data
+                        type: string
+                        documentation: 请求的返回数据
+                      - field_name: response_code
+                        key: response_code
+                        type: integer
+                        documentation: 请求的返回码
+                      - field_name: response_message
+                        key: response_message
+                        type: string
+                        documentation: 请求的返回信息
+                      - field_name: additional_event_data
+                        key: additional_event_data
+                        type: string
+                        documentation: 额外备注信息
+                    name: LogInfo
+                    documentation: 返回的审计日志
+                name: LogInfos
+                documentation: 返回的审计日志列表
