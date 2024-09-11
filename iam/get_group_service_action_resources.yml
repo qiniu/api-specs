@@ -28,29 +28,25 @@ response:
             field_name: data
             documentation: 用户分组指定服务操作下的可访问资源列表信息
             type:
-              array:
-                type:
-                  struct:
-                    fields:
-                      - field_name: allowed_resources
-                        key: allow
-                        documentation: 可用资源
-                        type:
-                          array:
-                            name: AllowedResources
-                            type: string
-                            documentation: 可用资源列表
-                      - field_name: denied_resources
-                        key: deny
-                        documentation: 禁用资源
-                        type:
-                          array:
-                            name: DeniedResources
-                            type: string
-                            documentation: 禁用资源列表
-                    name: GetGroupServiceActionResources
-                    documentation: 返回的用户分组指定服务操作下的可访问资源列表信息
-                name: GetGroupServiceActionResourcesData
+              struct:
+                fields:
+                  - field_name: allowed_resources
+                    key: allow
+                    documentation: 可用资源
+                    type:
+                      array:
+                        name: AllowedResources
+                        type: string
+                        documentation: 可用资源列表
+                  - field_name: denied_resources
+                    key: deny
+                    documentation: 禁用资源
+                    type:
+                      array:
+                        name: DeniedResources
+                        type: string
+                        documentation: 禁用资源列表
+                name: GetGroupServiceActionResources
                 documentation: 返回的用户分组指定服务操作下的可访问资源列表信息
         name: GetGroupServiceActionResourcesResp
         documentation: 返回的用户分组指定服务操作下的可访问资源列表响应

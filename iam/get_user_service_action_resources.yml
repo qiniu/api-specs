@@ -28,29 +28,26 @@ response:
             field_name: data
             documentation: IAM 子账号指定服务操作下的可访问资源列表信息
             type:
-              array:
-                type:
-                  struct:
-                    fields:
-                      - field_name: allowed_resources
-                        key: allow
-                        documentation: 可用资源
-                        type:
-                          array:
-                            name: AllowedResources
-                            type: string
-                            documentation: 可用资源列表
-                      - field_name: denied_resources
-                        key: deny
-                        documentation: 禁用资源
-                        type:
-                          array:
-                            name: DeniedResources
-                            type: string
-                            documentation: 禁用资源列表
-                    name: GetIamUserServiceActionResources
-                    documentation: 返回的 IAM 子账号指定服务操作下的可访问资源列表信息
-                name: GetIamUserServiceActionResourcesData
+              struct:
+                fields:
+                  - field_name: allowed_resources
+                    key: allow
+                    documentation: 可用资源
+                    type:
+                      array:
+                        name: AllowedResources
+                        type: string
+                        documentation: 可用资源列表
+                  - field_name: denied_resources
+                    key: deny
+                    documentation: 禁用资源
+                    type:
+                      array:
+                        name: DeniedResources
+                        type: string
+                        documentation: 禁用资源列表
+                name: GetIamUserServiceActionResources
                 documentation: 返回的 IAM 子账号指定服务操作下的可访问资源列表信息
+            name: GetIamUserServiceActionResourcesData
         name: GetIamUserServiceActionResourcesResp
         documentation: 返回的 IAM 子账号指定服务操作下的可访问资源列表响应
