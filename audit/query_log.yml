@@ -38,7 +38,7 @@ request:
     - field_name: limit
       query_name: limit
       documentation: 允许返回的最大结果数目，取值范围：1~50，不传值默认为：20
-      query_type: string
+      query_type: integer
       optional: omitempty
     - field_name: next_mark
       query_name: next_mark

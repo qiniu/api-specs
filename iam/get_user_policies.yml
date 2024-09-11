@@ -22,7 +22,7 @@ request:
       query_type: integer
       documentation: 分页大小，默认 20，最大 2000
       optional: omitempty
-
+response:
   body:
     json:
       struct:
