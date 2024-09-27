@@ -20,6 +20,7 @@ request:
           key: fops
           documentation: 数据处理命令列表，以 `;` 分隔，可以指定多个数据处理命令
           type: string
+          optional: omitempty
         - field_name: notify_url
           key: notifyURL
           documentation: 处理结果通知接收 URL
@@ -38,6 +39,11 @@ request:
         - field_name: pipeline
           key: pipeline
           documentation: 对列名，仅适用于普通任务
+          type: string
+          optional: omitempty
+        - field_name: workflow_template_id
+          key: workflowTemplateID
+          documentation: 工作流模板 ID
           type: string
           optional: omitempty
 response:
