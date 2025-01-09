@@ -1,4 +1,4 @@
-method: patch
+method: delete
 service_names:
   - api
 base_path: /iam/v1/groups
