@@ -30,11 +30,11 @@ response:
         documentation: 返回所有存储空间结果
         fields:
           - field_name: next_marker
-            key: nextMarker
+            key: next_marker
             type: string
             documentation: 下一页开始的空间标识
           - field_name: is_truncated
-            key: isTruncated
+            key: is_truncated
             type: boolean
             documentation: 是否所有的结果都已经返回
           - field_name: buckets
