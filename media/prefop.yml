@@ -84,6 +84,11 @@ response:
                         documentation: 如果处理失败，该字段会给出失败的详细原因
                         type: string
                         optional: omitempty
+                      - key: errorIndex
+                        field_name: errorIndex
+                        documentation: 如果处理失败，该字段会给出错误的管道顺序，从0开始，0表示第一段，以此类推。
+                        type: integer
+                        optional: omitempty
                       - key: hash
                         field_name: hash
                         documentation: 云处理结果保存在服务端的唯一标识
@@ -92,6 +97,19 @@ response:
                         field_name: object_name
                         documentation: 云处理结果的外链对象名称
                         type: string
+                      - key: result
+                        field_name: result
+                        documentation: 当 object_name 和 object_names 都不存在时，此字段会有值，返回 cmd 的处理结果
+                        type: any
+                      - key: keys
+                        field_name: object_names
+                        documentation: 当 cmd 返回多项结果时，此字段会有值，返回云处理结果的外链对象名称列表
+                        type:
+                          array:
+                            type: string
+                            name: object_names
+                            documentation: 云处理结果的外链对象名称
+                        optional: omitempty
                       - key: returnOld
                         field_name: return_old
                         documentation: 是否返回了旧的数据
