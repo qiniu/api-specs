@@ -1050,6 +1050,7 @@ tags:
 paths:
   /health:
     get:
+      operationId: healthCheck
       description: Health check
       responses:
         "200":
@@ -1058,6 +1059,7 @@ paths:
           $ref: "#/components/responses/401"
   /sandboxes:
     get:
+      operationId: listSandboxes
       description: List all running sandboxes
       tags: [sandboxes]
       security:
@@ -1086,6 +1088,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      operationId: createSandbox
       description: Create a sandbox from the template
       tags: [sandboxes]
       security:
@@ -1111,6 +1114,7 @@ paths:
           $ref: "#/components/responses/500"
   /v2/sandboxes:
     get:
+      operationId: listSandboxesV2
       description: List all sandboxes
       tags: [sandboxes]
       security:
@@ -1152,6 +1156,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/metrics:
     get:
+      operationId: getSandboxesMetrics
       description: List metrics for given sandboxes
       tags: [sandboxes]
       security:
@@ -1183,6 +1188,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/logs:
     get:
+      operationId: getSandboxLogs
       description: Get sandbox logs
       tags: [sandboxes]
       security:
@@ -1219,6 +1225,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}:
     get:
+      operationId: getSandbox
       description: Get a sandbox by id
       tags: [sandboxes]
       security:
@@ -1239,6 +1246,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      operationId: deleteSandbox
       description: Kill a sandbox
       tags: [sandboxes]
       security:
@@ -1256,6 +1264,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/metrics:
     get:
+      operationId: getSandboxMetrics
       description: Get sandbox metrics
       tags: [sandboxes]
       security:
@@ -1296,6 +1305,7 @@ paths:
   # TODO: Pause and resume might be exposed as POST /sandboxes/{sandboxID}/snapshot and then POST /sandboxes with specified snapshotting setup
   /sandboxes/{sandboxID}/pause:
     post:
+      operationId: pauseSandbox
       description: Pause the sandbox
       tags: [sandboxes]
       security:
@@ -1315,6 +1325,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/resume:
     post:
+      operationId: resumeSandbox
       deprecated: true
       description: Resume the sandbox
       tags: [sandboxes]
@@ -1345,6 +1356,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/connect:
     post:
+      operationId: connectSandbox
       description: Returns sandbox details. If the sandbox is paused, it will be resumed. TTL is only extended.
       tags: [sandboxes]
       security:
@@ -1380,6 +1392,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/timeout:
     post:
+      operationId: updateSandboxTimeout
       description: Set the timeout for the sandbox. The sandbox will expire x seconds from the time of the request. Calling this method multiple times overwrites the TTL, each time using the current timestamp as the starting point to measure the timeout duration.
       security:
         - ApiKeyAuth: []
@@ -1410,6 +1423,7 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/refreshes:
     post:
+      operationId: refreshSandbox
       description: Refresh the sandbox extending its time to live
       security:
         - ApiKeyAuth: []
@@ -1436,6 +1450,7 @@ paths:
           $ref: "#/components/responses/404"
   /v3/templates:
     post:
+      operationId: createTemplateV3
       description: Create a new template
       tags: [templates]
       security:
@@ -1461,6 +1476,7 @@ paths:
           $ref: "#/components/responses/500"
   /v2/templates:
     post:
+      operationId: createTemplateV2
       description: Create a new template
       deprecated: true
       tags: [templates]
@@ -1487,6 +1503,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/{templateID}/files/{hash}:
     get:
+      operationId: getTemplateFiles
       description: Get an upload link for a tar file containing build layer files
       tags: [templates]
       security:
@@ -1517,6 +1534,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates:
     get:
+      operationId: listTemplates
       description: List all templates
       tags: [templates]
       security:
@@ -1544,6 +1562,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      operationId: createTemplate
       description: Create a new template
       deprecated: true
       tags: [templates]
@@ -1570,6 +1589,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/{templateID}:
     get:
+      operationId: getTemplate
       description: List all builds for a template
       tags: [templates]
       security:
@@ -1590,6 +1610,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      operationId: rebuildTemplate
       description: Rebuild an template
       deprecated: true
       tags: [templates]
@@ -1615,6 +1636,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      operationId: deleteTemplate
       description: Delete a template
       tags: [templates]
       security:
@@ -1630,6 +1652,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     patch:
+      operationId: updateTemplate
       description: Update template
       tags: [templates]
       security:
@@ -1654,6 +1677,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/{templateID}/builds/{buildID}:
     post:
+      operationId: startTemplateBuild
       description: Start the build
       deprecated: true
       tags: [templates]
@@ -1671,6 +1695,7 @@ paths:
           $ref: "#/components/responses/500"
   /v2/templates/{templateID}/builds/{buildID}:
     post:
+      operationId: startTemplateBuildV2
       description: Start the build
       tags: [templates]
       security:
@@ -1693,6 +1718,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/{templateID}/builds/{buildID}/status:
     get:
+      operationId: getTemplateBuildStatus
       description: Get template build info
       tags: [templates]
       security:
@@ -1737,6 +1763,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/{templateID}/builds/{buildID}/logs:
     get:
+      operationId: getTemplateBuildLogs
       description: Get template build logs
       tags: [templates]
       security:
@@ -1789,6 +1816,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/tags:
     post:
+      operationId: manageTemplateTags
       description: Assign tag(s) to a template build
       tags: [tags]
       security:
@@ -1815,6 +1843,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      operationId: deleteTemplateTags
       description: Delete multiple tags from templates
       tags: [tags]
       security:
@@ -1838,6 +1867,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/aliases/{alias}:
     get:
+      operationId: getTemplateByAlias
       description: Check if template with given alias exists
       tags: [templates]
       security:
