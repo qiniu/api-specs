@@ -1049,14 +1049,6 @@ tags:
   - name: sandboxes
   - name: tags
 paths:
-  /health:
-    get:
-      description: Health check
-      responses:
-        "200":
-          description: Request was successful
-        "401":
-          $ref: "#/components/responses/401"
   /sandboxes:
     get:
       description: List all running sandboxes
