@@ -1604,7 +1604,7 @@ paths:
   /templates/{templateID}:
     get:
       operationId: getTemplate
-      description: List all builds for a template
+      description: Get template details
       tags: [templates]
       security:
         - ApiKeyAuth: []
@@ -1625,7 +1625,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       operationId: rebuildTemplate
-      description: Rebuild an template
+      description: Rebuild a template
       deprecated: true
       tags: [templates]
       security:
@@ -1830,7 +1830,7 @@ paths:
           $ref: "#/components/responses/500"
   /templates/tags:
     post:
-      operationId: manageTemplateTags
+      operationId: assignTemplateTags
       description: Assign tag(s) to a template build
       tags: [tags]
       security:
