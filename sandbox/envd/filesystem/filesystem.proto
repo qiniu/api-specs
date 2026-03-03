@@ -119,7 +119,7 @@ message GetWatcherEventsResponse {
 }
 
 message RemoveWatcherRequest {
-      string watcher_id = 1;
+    string watcher_id = 1;
 }
 
 message RemoveWatcherResponse {}
