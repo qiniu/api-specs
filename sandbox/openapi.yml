@@ -429,21 +429,25 @@ components:
           $ref: "#/components/schemas/Mcp"
         request_transforms:
           type: array
-          description: A sequence of transformations to apply to matching outgoing requests from the sandbox.
+          description: A sequence of transformations to apply to matching outgoing HTTPS requests from the sandbox. Only applies to HTTPS traffic on port 443.
+          maxItems: 20
           items:
             $ref: "#/components/schemas/RequestTransform"
     RequestTransformReplacements:
       type: object
       description: Replacements to apply for matching requests
+      maxProperties: 20
       properties:
         headers:
           type: object
-          description: HTTP headers to set or replace
+          description: HTTP headers to set or replace on matching HTTPS requests
+          maxProperties: 20
           additionalProperties:
             type: string
         queries:
           type: object
-          description: URL query parameters to replace (only if already present)
+          description: URL query parameters to replace on matching HTTPS requests (only if already present)
+          maxProperties: 20
           additionalProperties:
             type: string
     RequestTransformConditions:
@@ -452,7 +456,8 @@ components:
       properties:
         hosts:
           type: array
-          description: List of exact hostnames to match (wildcards are not supported)
+          description: List of exact HTTPS hostnames to match (wildcards are not supported). The transform will only apply to HTTPS requests to these hostnames on port 443.
+          maxItems: 20
           items:
             type: string
     RequestTransform:
