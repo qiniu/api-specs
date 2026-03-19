@@ -427,6 +427,42 @@ components:
           $ref: "#/components/schemas/EnvVars"
         mcp:
           $ref: "#/components/schemas/Mcp"
+        request_transforms:
+          type: array
+          description: A sequence of transformations to apply to matching outgoing requests from the sandbox.
+          items:
+            $ref: "#/components/schemas/RequestTransform"
+    RequestTransformReplacements:
+      type: object
+      description: Replacements to apply for matching requests
+      properties:
+        headers:
+          type: object
+          description: HTTP headers to set or replace
+          additionalProperties:
+            type: string
+        queries:
+          type: object
+          description: URL query parameters to replace (only if already present)
+          additionalProperties:
+            type: string
+    RequestTransformConditions:
+      type: object
+      description: Conditions that must be met for the transform to apply
+      properties:
+        hosts:
+          type: array
+          description: List of exact hostnames to match (wildcards are not supported)
+          items:
+            type: string
+    RequestTransform:
+      type: object
+      description: Transformation rule for outgoing requests
+      properties:
+        conditions:
+          $ref: "#/components/schemas/RequestTransformConditions"
+        replacements:
+          $ref: "#/components/schemas/RequestTransformReplacements"
     ResumedSandbox:
       properties:
         timeout:
