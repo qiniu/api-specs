@@ -34,6 +34,12 @@ components:
       required: true
       schema:
         type: string
+    transformRuleID:
+      name: ruleID
+      in: path
+      required: true
+      schema:
+        type: string
     paginationLimit:
       name: limit
       in: query
@@ -429,10 +435,16 @@ components:
           $ref: "#/components/schemas/Mcp"
         request_transforms:
           type: array
-          description: A sequence of transformations to apply to matching outgoing HTTPS requests from the sandbox. Only applies to HTTPS traffic on port 443.
+          description: A sequence of transformations to apply to matching outgoing HTTPS requests from the sandbox. Only applies to HTTPS traffic on port 443. Mutually exclusive with request_transform_ids.
           maxItems: 20
           items:
             $ref: "#/components/schemas/RequestTransform"
+        request_transform_ids:
+          type: array
+          description: IDs of pre-defined transform rules to apply to matching outgoing HTTPS requests. Mutually exclusive with request_transforms.
+          maxItems: 20
+          items:
+            type: string
     RequestTransformReplacements:
       type: object
       description: Replacements to apply for matching requests
@@ -1085,6 +1097,53 @@ components:
         message:
           type: string
           description: Error
+    TransformRule:
+      description: A saved transform rule that can be referenced by sandbox instances
+      allOf:
+        - $ref: "#/components/schemas/RequestTransform"
+        - type: object
+          required:
+            - ruleID
+            - name
+            - createdAt
+            - updatedAt
+          properties:
+            ruleID:
+              type: string
+              description: Unique identifier of the transform rule
+            name:
+              type: string
+              description: Human-readable name of the transform rule. Must be unique per user.
+            createdAt:
+              type: string
+              format: date-time
+              description: Timestamp when the transform rule was created
+            updatedAt:
+              type: string
+              format: date-time
+              description: Timestamp when the transform rule was last updated
+    NewTransformRule:
+      description: Request body for creating a new transform rule
+      allOf:
+        - $ref: "#/components/schemas/RequestTransform"
+        - type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Human-readable name of the transform rule. Must be unique per user.
+              maxLength: 64
+    UpdateTransformRule:
+      description: Request body for updating an existing transform rule
+      allOf:
+        - $ref: "#/components/schemas/RequestTransform"
+        - type: object
+          properties:
+            name:
+              type: string
+              description: Human-readable name of the transform rule. Must be unique per user.
+              maxLength: 64
 tags:
   - name: templates
   - name: sandboxes
@@ -1945,6 +2004,123 @@ paths:
           $ref: "#/components/responses/400"
         "403":
           $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /transform-rules:
+    get:
+      description: List transform rules
+      tags: [transform-rules]
+      security:
+        - ApiKeyAuth: []
+        - AccessTokenAuth: []
+      responses:
+        "200":
+          description: Successfully returned transform rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransformRule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      description: Create a new transform rule
+      tags: [transform-rules]
+      security:
+        - ApiKeyAuth: []
+        - AccessTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewTransformRule"
+      responses:
+        "201":
+          description: Transform rule created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransformRule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+  /transform-rules/{ruleID}:
+    get:
+      description: Get a transform rule by ID
+      tags: [transform-rules]
+      security:
+        - ApiKeyAuth: []
+        - AccessTokenAuth: []
+      parameters:
+        - $ref: "#/components/parameters/transformRuleID"
+      responses:
+        "200":
+          description: Successfully returned transform rule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransformRule"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      description: Update a transform rule
+      tags: [transform-rules]
+      security:
+        - ApiKeyAuth: []
+        - AccessTokenAuth: []
+      parameters:
+        - $ref: "#/components/parameters/transformRuleID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTransformRule"
+      responses:
+        "200":
+          description: Transform rule updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransformRule"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      description: Delete a transform rule
+      tags: [transform-rules]
+      security:
+        - ApiKeyAuth: []
+        - AccessTokenAuth: []
+      parameters:
+        - $ref: "#/components/parameters/transformRuleID"
+      responses:
+        "204":
+          description: Transform rule deleted successfully
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
         "500":
