@@ -34,7 +34,7 @@ components:
       required: true
       schema:
         type: string
-    transformRuleID:
+    injectionRuleID:
       name: ruleID
       in: path
       required: true
@@ -433,53 +433,87 @@ components:
           $ref: "#/components/schemas/EnvVars"
         mcp:
           $ref: "#/components/schemas/Mcp"
-        request_transforms:
+        request_injections:
           type: array
-          description: A sequence of transformations to apply to matching outgoing HTTPS requests from the sandbox. Only applies to HTTPS traffic on port 443. Mutually exclusive with request_transform_ids.
+          description: A sequence of injection rules to apply to matching outgoing HTTPS requests from the sandbox. Only applies to HTTPS traffic on port 443. Mutually exclusive with request_injection_ids.
           maxItems: 20
           items:
-            $ref: "#/components/schemas/RequestTransform"
-        request_transform_ids:
+            $ref: "#/components/schemas/RequestInjection"
+        request_injection_ids:
           type: array
-          description: IDs of pre-defined transform rules to apply to matching outgoing HTTPS requests. Mutually exclusive with request_transforms.
+          description: IDs of pre-defined injection rules to apply to matching outgoing HTTPS requests. Mutually exclusive with request_injections.
           maxItems: 20
           items:
             type: string
-    RequestTransformReplacements:
+    ApiKeyInjection:
       type: object
-      description: Replacements to apply for matching requests
-      maxProperties: 20
+      description: |
+        Simplified API key injection for well-known API protocols. When set, the system
+        automatically configures the correct authentication method (header or query parameter)
+        based on the protocol type. Mutually exclusive with headers and queries.
+      required:
+        - type
+        - value
+      properties:
+        type:
+          type: string
+          enum:
+            - openai
+            - anthropic
+            - gemini
+          description: |
+            Pre-defined API protocol identifier.
+            Supported protocols:
+            - openai: OpenAI-compatible APIs (Authorization: Bearer <key>, default host: api.openai.com)
+            - anthropic: Anthropic API (x-api-key header, default host: api.anthropic.com)
+            - gemini: Google Gemini API (x-goog-api-key header, default host: generativelanguage.googleapis.com)
+        value:
+          type: string
+          writeOnly: true
+          description: API key or token for the specified protocol
+    RequestInjections:
+      type: object
+      description: |
+        Injections to apply for matching requests. Supports two mutually exclusive modes:
+        - API key mode: use api to inject credentials for well-known API protocols
+        - Manual mode: use headers and/or queries for custom injection
       properties:
         headers:
           type: object
-          description: HTTP headers to set or replace on matching HTTPS requests
+          description: HTTP headers to inject or overwrite on matching HTTPS requests. Mutually exclusive with api.
           maxProperties: 20
           additionalProperties:
             type: string
         queries:
           type: object
-          description: URL query parameters to replace on matching HTTPS requests (only if already present)
+          description: URL query parameters to replace on matching HTTPS requests (only if already present). Mutually exclusive with api.
           maxProperties: 20
           additionalProperties:
             type: string
-    RequestTransformConditions:
+        api:
+          $ref: "#/components/schemas/ApiKeyInjection"
+    RequestInjectionConditions:
       type: object
-      description: Conditions that must be met for the transform to apply
+      description: Conditions that must be met for the injection to apply
       properties:
         hosts:
           type: array
-          description: List of exact HTTPS hostnames to match (wildcards are not supported). The transform will only apply to HTTPS requests to these hostnames on port 443.
+          description: |
+            List of exact HTTPS hostnames to match (wildcards are not supported).
+            The injection will only apply to HTTPS requests to these hostnames on port 443.
+            When empty and api is set, the protocol's default hosts are used automatically.
+            When non-empty, the provided hosts override (not merge with) the protocol defaults.
           maxItems: 20
           items:
             type: string
-    RequestTransform:
+    RequestInjection:
       type: object
-      description: Transformation rule for outgoing requests
+      description: Injection rule for outgoing HTTPS requests
       properties:
         conditions:
-          $ref: "#/components/schemas/RequestTransformConditions"
-        replacements:
-          $ref: "#/components/schemas/RequestTransformReplacements"
+          $ref: "#/components/schemas/RequestInjectionConditions"
+        injections:
+          $ref: "#/components/schemas/RequestInjections"
     ResumedSandbox:
       properties:
         timeout:
@@ -1097,10 +1131,10 @@ components:
         message:
           type: string
           description: Error
-    TransformRule:
-      description: A saved transform rule that can be referenced by sandbox instances
+    InjectionRule:
+      description: A saved injection rule that can be referenced by sandbox instances
       allOf:
-        - $ref: "#/components/schemas/RequestTransform"
+        - $ref: "#/components/schemas/RequestInjection"
         - type: object
           required:
             - ruleID
@@ -1110,39 +1144,39 @@ components:
           properties:
             ruleID:
               type: string
-              description: Unique identifier of the transform rule
+              description: Unique identifier of the injection rule
             name:
               type: string
-              description: Human-readable name of the transform rule. Must be unique per user.
+              description: Human-readable name of the injection rule. Must be unique per user.
             createdAt:
               type: string
               format: date-time
-              description: Timestamp when the transform rule was created
+              description: Timestamp when the injection rule was created
             updatedAt:
               type: string
               format: date-time
-              description: Timestamp when the transform rule was last updated
-    NewTransformRule:
-      description: Request body for creating a new transform rule
+              description: Timestamp when the injection rule was last updated
+    NewInjectionRule:
+      description: Request body for creating a new injection rule
       allOf:
-        - $ref: "#/components/schemas/RequestTransform"
+        - $ref: "#/components/schemas/RequestInjection"
         - type: object
           required:
             - name
           properties:
             name:
               type: string
-              description: Human-readable name of the transform rule. Must be unique per user.
+              description: Human-readable name of the injection rule. Must be unique per user.
               maxLength: 64
-    UpdateTransformRule:
-      description: Request body for updating an existing transform rule
+    UpdateInjectionRule:
+      description: Request body for updating an existing injection rule
       allOf:
-        - $ref: "#/components/schemas/RequestTransform"
+        - $ref: "#/components/schemas/RequestInjection"
         - type: object
           properties:
             name:
               type: string
-              description: Human-readable name of the transform rule. Must be unique per user.
+              description: Human-readable name of the injection rule. Must be unique per user.
               maxLength: 64
 tags:
   - name: templates
@@ -2008,22 +2042,22 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-  /transform-rules:
+  /injection-rules:
     get:
-      description: List transform rules
-      tags: [transform-rules]
+      description: List injection rules
+      tags: [injection-rules]
       security:
         - ApiKeyAuth: []
         - AccessTokenAuth: []
       responses:
         "200":
-          description: Successfully returned transform rules
+          description: Successfully returned injection rules
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransformRule"
+                  $ref: "#/components/schemas/InjectionRule"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2031,8 +2065,8 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
-      description: Create a new transform rule
-      tags: [transform-rules]
+      description: Create a new injection rule
+      tags: [injection-rules]
       security:
         - ApiKeyAuth: []
         - AccessTokenAuth: []
@@ -2041,14 +2075,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NewTransformRule"
+              $ref: "#/components/schemas/NewInjectionRule"
       responses:
         "201":
-          description: Transform rule created successfully
+          description: Injection rule created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransformRule"
+                $ref: "#/components/schemas/InjectionRule"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2057,22 +2091,22 @@ paths:
           $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
-  /transform-rules/{ruleID}:
+  /injection-rules/{ruleID}:
     get:
-      description: Get a transform rule by ID
-      tags: [transform-rules]
+      description: Get an injection rule by ID
+      tags: [injection-rules]
       security:
         - ApiKeyAuth: []
         - AccessTokenAuth: []
       parameters:
-        - $ref: "#/components/parameters/transformRuleID"
+        - $ref: "#/components/parameters/injectionRuleID"
       responses:
         "200":
-          description: Successfully returned transform rule
+          description: Successfully returned injection rule
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransformRule"
+                $ref: "#/components/schemas/InjectionRule"
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -2080,26 +2114,26 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
-      description: Update a transform rule
-      tags: [transform-rules]
+      description: Update an injection rule
+      tags: [injection-rules]
       security:
         - ApiKeyAuth: []
         - AccessTokenAuth: []
       parameters:
-        - $ref: "#/components/parameters/transformRuleID"
+        - $ref: "#/components/parameters/injectionRuleID"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateTransformRule"
+              $ref: "#/components/schemas/UpdateInjectionRule"
       responses:
         "200":
-          description: Transform rule updated successfully
+          description: Injection rule updated successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransformRule"
+                $ref: "#/components/schemas/InjectionRule"
         "400":
           $ref: "#/components/responses/400"
         "404":
@@ -2109,16 +2143,16 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
-      description: Delete a transform rule
-      tags: [transform-rules]
+      description: Delete an injection rule
+      tags: [injection-rules]
       security:
         - ApiKeyAuth: []
         - AccessTokenAuth: []
       parameters:
-        - $ref: "#/components/parameters/transformRuleID"
+        - $ref: "#/components/parameters/injectionRuleID"
       responses:
         "204":
-          description: Transform rule deleted successfully
+          description: Injection rule deleted successfully
         "401":
           $ref: "#/components/responses/401"
         "404":
