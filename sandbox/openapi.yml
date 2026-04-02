@@ -15,6 +15,10 @@ components:
       type: http
       scheme: bearer
       bearerFormat: access_token
+    QiniuAccessKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
   parameters:
     templateID:
       name: templateID
@@ -395,6 +399,12 @@ components:
           $ref: "#/components/schemas/SandboxState"
         envdVersion:
           $ref: "#/components/schemas/EnvdVersion"
+        executionId:
+          type: string
+          description: Execution ID of the sandbox
+        uid:
+          type: string
+          description: 七牛用户 uid
     SandboxesWithMetrics:
       required:
         - sandboxes
@@ -433,87 +443,143 @@ components:
           $ref: "#/components/schemas/EnvVars"
         mcp:
           $ref: "#/components/schemas/Mcp"
-        request_injections:
+        injections:
           type: array
-          description: A sequence of injection rules to apply to matching outgoing HTTPS requests from the sandbox. Only applies to HTTPS traffic on port 443. Mutually exclusive with request_injection_ids.
+          description: |
+            Injection rules to apply to outgoing HTTPS requests from the sandbox.
+            Each item is a discriminated union with a "type" field.
           maxItems: 20
           items:
-            $ref: "#/components/schemas/RequestInjection"
-        request_injection_ids:
-          type: array
-          description: IDs of pre-defined injection rules to apply to matching outgoing HTTPS requests. Mutually exclusive with request_injections.
-          maxItems: 20
-          items:
-            type: string
-    ApiKeyInjection:
+            $ref: "#/components/schemas/SandboxInjection"
+    SandboxInjection:
+      oneOf:
+        - $ref: "#/components/schemas/InjectionById"
+        - $ref: "#/components/schemas/HttpInjection"
+        - $ref: "#/components/schemas/OpenaiInjection"
+        - $ref: "#/components/schemas/AnthropicInjection"
+        - $ref: "#/components/schemas/GeminiInjection"
+      discriminator:
+        propertyName: type
+        mapping:
+          id: "#/components/schemas/InjectionById"
+          http: "#/components/schemas/HttpInjection"
+          openai: "#/components/schemas/OpenaiInjection"
+          anthropic: "#/components/schemas/AnthropicInjection"
+          gemini: "#/components/schemas/GeminiInjection"
+    Injection:
+      oneOf:
+        - $ref: "#/components/schemas/HttpInjection"
+        - $ref: "#/components/schemas/OpenaiInjection"
+        - $ref: "#/components/schemas/AnthropicInjection"
+        - $ref: "#/components/schemas/GeminiInjection"
+      discriminator:
+        propertyName: type
+        mapping:
+          http: "#/components/schemas/HttpInjection"
+          openai: "#/components/schemas/OpenaiInjection"
+          anthropic: "#/components/schemas/AnthropicInjection"
+          gemini: "#/components/schemas/GeminiInjection"
+    InjectionById:
       type: object
-      description: |
-        Simplified API key injection for well-known API protocols. When set, the system
-        automatically configures the correct authentication method (header or query parameter)
-        based on the protocol type. Mutually exclusive with headers and queries.
+      description: Reference an existing injection rule by ID
       required:
         - type
-        - value
+        - id
+      properties:
+        type:
+          type: string
+          enum:
+            - id
+          description: Injection type identifier
+        id:
+          type: string
+          description: ID of the pre-defined injection rule
+    HttpInjection:
+      type: object
+      description: Custom HTTP injection with base URL and headers
+      required:
+        - type
+        - base_url
+      properties:
+        type:
+          type: string
+          enum:
+            - http
+          description: Injection type identifier
+        base_url:
+          type: string
+          description: |
+            Base URL for matching HTTPS requests. The domain part is used for host matching.
+            Default scheme is https if not specified.
+        headers:
+          type: object
+          description: HTTP headers to inject or overwrite on matching HTTPS requests.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+    OpenaiInjection:
+      type: object
+      description: |
+        OpenAI-compatible API injection. Automatically configures Authorization Bearer header.
+        Default host: api.openai.com
+      required:
+        - type
+        - api_key
       properties:
         type:
           type: string
           enum:
             - openai
-            - anthropic
-            - gemini
-          description: |
-            Pre-defined API protocol identifier.
-            Supported protocols:
-            - openai: OpenAI-compatible APIs (Authorization: Bearer <key>, default host: api.openai.com)
-            - anthropic: Anthropic API (x-api-key header, default host: api.anthropic.com)
-            - gemini: Google Gemini API (x-goog-api-key header, default host: generativelanguage.googleapis.com)
-        value:
+          description: Injection type identifier
+        base_url:
+          type: string
+          description: Optional base URL. If not specified, uses api.openai.com
+        api_key:
           type: string
           writeOnly: true
-          description: API key or token for the specified protocol
-    RequestInjections:
+          description: API key for OpenAI-compatible APIs
+    AnthropicInjection:
       type: object
       description: |
-        Injections to apply for matching requests. Supports two mutually exclusive modes:
-        - API key mode: use api to inject credentials for well-known API protocols
-        - Manual mode: use headers and/or queries for custom injection
+        Anthropic API injection. Automatically configures x-api-key header.
+        Default host: api.anthropic.com
+      required:
+        - type
+        - api_key
       properties:
-        headers:
-          type: object
-          description: HTTP headers to inject or overwrite on matching HTTPS requests. Mutually exclusive with api.
-          maxProperties: 20
-          additionalProperties:
-            type: string
-        queries:
-          type: object
-          description: URL query parameters to replace on matching HTTPS requests (only if already present). Mutually exclusive with api.
-          maxProperties: 20
-          additionalProperties:
-            type: string
-        api:
-          $ref: "#/components/schemas/ApiKeyInjection"
-    RequestInjectionConditions:
+        type:
+          type: string
+          enum:
+            - anthropic
+          description: Injection type identifier
+        base_url:
+          type: string
+          description: Optional base URL. If not specified, uses api.anthropic.com
+        api_key:
+          type: string
+          writeOnly: true
+          description: API key for Anthropic API
+    GeminiInjection:
       type: object
-      description: Conditions that must be met for the injection to apply
+      description: |
+        Google Gemini API injection. Automatically configures x-goog-api-key header.
+        Default host: generativelanguage.googleapis.com
+      required:
+        - type
+        - api_key
       properties:
-        hosts:
-          type: array
-          description: |
-            List of exact HTTPS hostnames to match (wildcards are not supported).
-            The injection will only apply to HTTPS requests to these hostnames on port 443.
-            When empty and api is set, the protocol's default hosts are used automatically.
-            When non-empty, the provided hosts override (not merge with) the protocol defaults.
-          maxItems: 20
-          items:
-            type: string
-    RequestInjection:
-      type: object
-      description: Injection rule for outgoing HTTPS requests
-      properties:
-        conditions:
-          $ref: "#/components/schemas/RequestInjectionConditions"
-        injections:
-          $ref: "#/components/schemas/RequestInjections"
+        type:
+          type: string
+          enum:
+            - gemini
+          description: Injection type identifier
+        base_url:
+          type: string
+          description: Optional base URL. If not specified, uses generativelanguage.googleapis.com
+        api_key:
+          type: string
+          writeOnly: true
+          description: API key for Google Gemini API
     ResumedSandbox:
       properties:
         timeout:
@@ -1133,51 +1199,53 @@ components:
           description: Error
     InjectionRule:
       description: A saved injection rule that can be referenced by sandbox instances
-      allOf:
-        - $ref: "#/components/schemas/RequestInjection"
-        - type: object
-          required:
-            - ruleID
-            - name
-            - createdAt
-            - updatedAt
-          properties:
-            ruleID:
-              type: string
-              description: Unique identifier of the injection rule
-            name:
-              type: string
-              description: Human-readable name of the injection rule. Must be unique per user.
-            createdAt:
-              type: string
-              format: date-time
-              description: Timestamp when the injection rule was created
-            updatedAt:
-              type: string
-              format: date-time
-              description: Timestamp when the injection rule was last updated
+      type: object
+      required:
+        - ruleID
+        - name
+        - createdAt
+        - updatedAt
+        - injection
+      properties:
+        ruleID:
+          type: string
+          description: Unique identifier of the injection rule
+        name:
+          type: string
+          description: Human-readable name of the injection rule. Must be unique per user.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the injection rule was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the injection rule was last updated
+        injection:
+          $ref: "#/components/schemas/Injection"
     NewInjectionRule:
       description: Request body for creating a new injection rule
-      allOf:
-        - $ref: "#/components/schemas/RequestInjection"
-        - type: object
-          required:
-            - name
-          properties:
-            name:
-              type: string
-              description: Human-readable name of the injection rule. Must be unique per user.
-              maxLength: 64
+      type: object
+      required:
+        - name
+        - injection
+      properties:
+        name:
+          type: string
+          description: Human-readable name of the injection rule. Must be unique per user.
+          maxLength: 64
+        injection:
+          $ref: "#/components/schemas/Injection"
     UpdateInjectionRule:
       description: Request body for updating an existing injection rule
-      allOf:
-        - $ref: "#/components/schemas/RequestInjection"
-        - type: object
-          properties:
-            name:
-              type: string
-              description: Human-readable name of the injection rule. Must be unique per user.
-              maxLength: 64
+      type: object
+      properties:
+        name:
+          type: string
+          description: Human-readable name of the injection rule. Must be unique per user.
+          maxLength: 64
+        injection:
+          $ref: "#/components/schemas/Injection"
 tags:
   - name: templates
   - name: sandboxes
@@ -2047,8 +2115,7 @@ paths:
       description: List injection rules
       tags: [injection-rules]
       security:
-        - ApiKeyAuth: []
-        - AccessTokenAuth: []
+        - QiniuAccessKeyAuth: []
       responses:
         "200":
           description: Successfully returned injection rules
@@ -2068,8 +2135,7 @@ paths:
       description: Create a new injection rule
       tags: [injection-rules]
       security:
-        - ApiKeyAuth: []
-        - AccessTokenAuth: []
+        - QiniuAccessKeyAuth: []
       requestBody:
         required: true
         content:
@@ -2096,8 +2162,7 @@ paths:
       description: Get an injection rule by ID
       tags: [injection-rules]
       security:
-        - ApiKeyAuth: []
-        - AccessTokenAuth: []
+        - QiniuAccessKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/injectionRuleID"
       responses:
@@ -2117,8 +2182,7 @@ paths:
       description: Update an injection rule
       tags: [injection-rules]
       security:
-        - ApiKeyAuth: []
-        - AccessTokenAuth: []
+        - QiniuAccessKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/injectionRuleID"
       requestBody:
@@ -2146,8 +2210,7 @@ paths:
       description: Delete an injection rule
       tags: [injection-rules]
       security:
-        - ApiKeyAuth: []
-        - AccessTokenAuth: []
+        - QiniuAccessKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/injectionRuleID"
       responses:
@@ -2159,3 +2222,4 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
+
