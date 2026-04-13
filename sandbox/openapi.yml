@@ -458,6 +458,7 @@ components:
         - $ref: "#/components/schemas/OpenaiInjection"
         - $ref: "#/components/schemas/AnthropicInjection"
         - $ref: "#/components/schemas/GeminiInjection"
+        - $ref: "#/components/schemas/QiniuInjection"
       discriminator:
         propertyName: type
         mapping:
@@ -466,12 +467,14 @@ components:
           openai: "#/components/schemas/OpenaiInjection"
           anthropic: "#/components/schemas/AnthropicInjection"
           gemini: "#/components/schemas/GeminiInjection"
+          qiniu: "#/components/schemas/QiniuInjection"
     Injection:
       oneOf:
         - $ref: "#/components/schemas/HttpInjection"
         - $ref: "#/components/schemas/OpenaiInjection"
         - $ref: "#/components/schemas/AnthropicInjection"
         - $ref: "#/components/schemas/GeminiInjection"
+        - $ref: "#/components/schemas/QiniuInjection"
       discriminator:
         propertyName: type
         mapping:
@@ -479,6 +482,7 @@ components:
           openai: "#/components/schemas/OpenaiInjection"
           anthropic: "#/components/schemas/AnthropicInjection"
           gemini: "#/components/schemas/GeminiInjection"
+          qiniu: "#/components/schemas/QiniuInjection"
     InjectionById:
       type: object
       description: Reference an existing injection rule by ID
@@ -580,6 +584,29 @@ components:
           type: string
           writeOnly: true
           description: API key for Google Gemini API
+    QiniuInjection:
+      type: object
+      description: |
+        Qiniu AI API injection. Qiniu's gateway is compatible with both OpenAI and Anthropic
+        protocols on the same host, so the api_key is injected into whichever auth header the
+        outgoing request actually carries (Authorization or x-api-key).
+        Default host: api.qnaigc.com
+      required:
+        - type
+        - api_key
+      properties:
+        type:
+          type: string
+          enum:
+            - qiniu
+          description: Injection type identifier
+        base_url:
+          type: string
+          description: Optional base URL. If not specified, uses api.qnaigc.com
+        api_key:
+          type: string
+          writeOnly: true
+          description: API key for Qiniu AI API
     ResumedSandbox:
       properties:
         timeout:
