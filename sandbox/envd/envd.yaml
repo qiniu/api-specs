@@ -31,7 +31,28 @@ paths:
 
   /init:
     post:
-      summary: Set initial vars, ensure the time and metadata is synced with the host
+      summary: Bootstrap and update envd runtime state
+      description: |
+        Configure envd runtime state. Each field in the request body is optional and is
+        applied independently: sync the system clock, merge environment variables, set the
+        access token, configure default user / workdir, install a CA certificate into the
+        system trust store, point `events.e2b.local` at the hyperloop IP, set up filesystem
+        mounts, and run post-init actions.
+
+        Before an access token has been configured, `/init` may be called anonymously so a
+        trusted caller can bootstrap the guest. Once an access token is configured, later
+        `/init` calls must provide `X-Access-Token`. The access token is immutable: a
+        subsequent `/init` that supplies a different value returns `409 Conflict`.
+
+        `/init` may be called more than once. Most operations are idempotent — env vars are
+        merged, the CA cert is appended only if missing, mounts skip targets that are
+        already mounted — but post-init actions run on every call. When `timestamp` is
+        provided, requests older than the most recently applied `/init` are dropped, so
+        callers can safely retry without overwriting newer state.
+
+        Privileged fields such as `mounts` and `postInitActions` directly affect the
+        sandbox's filesystem and execute arbitrary commands; they rely on the trusted
+        caller / transport boundary for safety.
       security:
         - AccessTokenAuth: []
         - {}
@@ -59,9 +80,25 @@ paths:
                 defaultWorkdir:
                   type: string
                   description: The default working directory to use for operations
+                mounts:
+                  type: array
+                  description: Mounts to set up inside the sandbox before post-init actions run
+                  items:
+                    $ref: "#/components/schemas/Mount"
+                postInitActions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/PostInitAction"
+                caCertPEM:
+                  type: string
+                  description: CA certificate in PEM format for MITM APIKEY protection to be injected into the sandbox system trust store
       responses:
         "204":
-          description: Env vars set, the time and metadata is synced with the host
+          description: Init applied successfully (or skipped because the request timestamp is older than the last applied init)
+        "400":
+          description: Invalid request body, or a failure occurred while applying init data (e.g. a mount or post-init action failed)
+        "409":
+          description: Access token has already been configured with a different value
 
   /envs:
     get:
@@ -224,6 +261,45 @@ components:
             $ref: "#/components/schemas/Error"
 
   schemas:
+    Mount:
+      type: object
+      required:
+        - sourcePath
+        - targetPath
+      properties:
+        sourcePath:
+          type: string
+          description: Mount source (block device, NFS target, or another path)
+        targetPath:
+          type: string
+          description: Absolute path inside the sandbox where the source is mounted
+        options:
+          type: array
+          description: Extra arguments passed verbatim to mount(8) before the source and target (e.g. `["-t", "ext4", "-o", "ro,nosuid"]`, or `["--bind"]` for bind mounts).
+          items:
+            type: string
+    PostInitAction:
+      type: object
+      required:
+        - argv
+      properties:
+        argv:
+          type: array
+          description: Command argv to execute directly without a shell
+          items:
+            type: string
+        user:
+          type: string
+          description: Optional target user to run the command as
+        cwd:
+          type: string
+          description: Optional working directory for the command
+        envVars:
+          $ref: "#/components/schemas/EnvVars"
+        timeoutMs:
+          type: integer
+          format: int64
+          description: Optional timeout in milliseconds for this command
     Error:
       required:
         - message
