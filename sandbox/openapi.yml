@@ -5,6 +5,7 @@ info:
   title: Qiniu Sandbox Public API
 servers:
   - url: https://cn-yangzhou-1-sandbox.qiniuapi.com
+  - url: https://us-south-1-sandbox.qiniuapi.com
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -498,10 +499,12 @@ components:
     SandboxResource:
       oneOf:
         - $ref: "#/components/schemas/GitRepositoryResource"
+        - $ref: "#/components/schemas/KodoResource"
       discriminator:
         propertyName: type
         mapping:
           github_repository: "#/components/schemas/GitRepositoryResource"
+          kodo: "#/components/schemas/KodoResource"
     InjectionById:
       type: object
       description: Reference an existing injection rule by ID
@@ -649,7 +652,7 @@ components:
       description: |
         GitHub repository resource mounted into the sandbox.
         The platform materializes a cached snapshot of the repository for mounting.
-        The first snapshot is cloned from the repository default branch HEAD, and later sandboxes may reuse that cached snapshot without refreshing it to the latest HEAD.
+        The first snapshot is cloned from the repository default branch HEAD. Subsequent sandboxes reuse the cached snapshot, and the platform refreshes it to the latest default-branch HEAD on a best-effort schedule: a soft TTL triggers a background refresh (the triggering request keeps using the stale snapshot, but later requests that arrive while the refresh is in flight wait for it to complete), and a hard TTL forces the next request to block on a synchronous refresh.
       required:
         - type
         - url
@@ -663,7 +666,7 @@ components:
           description: Resource type identifier
         url:
           type: string
-          description: GitHub repository URL in HTTPS or SSH form, for example https://github.com/owner/repo.git or git@github.com:owner/repo.git
+          description: GitHub repository URL in HTTPS form, or GitHub SSH-style form git@github.com:owner/repo.git. The platform normalizes the value to HTTPS.
         mount_path:
           type: string
           description: Absolute path where the repository contents should appear inside the sandbox
@@ -671,6 +674,44 @@ components:
           type: string
           writeOnly: true
           description: GitHub token used to access this repository. All GitHub repository resources in a single sandbox must currently use the same token.
+    KodoResource:
+      type: object
+      description: |
+        Kodo bucket resource mounted into the sandbox via NFS.
+        The platform creates an NFS-backed proxy that maps the Kodo bucket to a local path inside the sandbox.
+        Credentials (access_key/secret_key) are never exposed inside the sandbox.
+      required:
+        - type
+        - access_key
+        - secret_key
+        - bucket
+        - mount_path
+      properties:
+        type:
+          type: string
+          enum:
+            - kodo
+          description: Resource type identifier
+        access_key:
+          type: string
+          writeOnly: true
+          description: Kodo access key ID
+        secret_key:
+          type: string
+          writeOnly: true
+          description: Kodo secret access key
+        bucket:
+          type: string
+          description: Kodo bucket name
+        mount_path:
+          type: string
+          description: Absolute path where the bucket contents should appear inside the sandbox
+        prefix:
+          type: string
+          description: Optional subdirectory (key prefix) within the bucket. Only the contents under this prefix are exposed. If omitted, the whole bucket root is mounted.
+        read_only:
+          type: boolean
+          description: Whether the mount is read-only. Automatically set to true when AK/SK lacks write permission. Can also be set explicitly.
     ResumedSandbox:
       properties:
         timeout:
@@ -893,6 +934,10 @@ components:
           $ref: "#/components/schemas/DiskSizeMB"
         envdVersion:
           $ref: "#/components/schemas/EnvdVersion"
+        objectStorageBytes:
+          type: integer
+          format: int64
+          description: Total bytes used in object storage for this build
     TemplateWithBuilds:
       required:
         - templateID
