@@ -680,10 +680,9 @@ components:
         Kodo bucket resource mounted into the sandbox via NFS.
         The platform creates an NFS-backed proxy that maps the Kodo bucket to a local path inside the sandbox.
         Credentials (access_key/secret_key) are never exposed inside the sandbox.
+        Note: Kodo resource is only supported when creating a sandbox with Qiniu AKSK authentication. API key authentication is not supported.
       required:
         - type
-        - access_key
-        - secret_key
         - bucket
         - mount_path
       properties:
@@ -692,14 +691,6 @@ components:
           enum:
             - kodo
           description: Resource type identifier
-        access_key:
-          type: string
-          writeOnly: true
-          description: Kodo access key ID
-        secret_key:
-          type: string
-          writeOnly: true
-          description: Kodo secret access key
         bucket:
           type: string
           description: Kodo bucket name
