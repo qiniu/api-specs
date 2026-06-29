@@ -535,8 +535,20 @@ components:
         base_url:
           type: string
           description: |
-            Base URL for matching HTTPS requests. The domain part is used for host matching.
+            Base URL for matching HTTPS requests. The host is matched exactly. When a path is present, it matches the normalized request path exactly; a trailing `*` enables normalized string-prefix matching.
             Default scheme is https if not specified.
+        if_headers:
+          type: object
+          description: Optional HTTP request headers that must already be present with exact values before this injection matches. Header names are matched case-insensitively; repeated headers compare only their first value. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set request headers.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_queries:
+          type: object
+          description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
         headers:
           type: object
           description: HTTP headers to inject or overwrite on matching HTTPS requests.
@@ -559,7 +571,19 @@ components:
           description: Injection type identifier
         base_url:
           type: string
-          description: Optional base URL. If not specified, uses api.openai.com
+          description: Optional base URL. If not specified, uses api.openai.com. The host is matched exactly. When a path is present, it matches the normalized request path exactly; a trailing `*` enables normalized string-prefix matching.
+        if_headers:
+          type: object
+          description: Optional HTTP request headers that must already be present with exact values before this injection matches. Header names are matched case-insensitively; repeated headers compare only their first value. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set request headers.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_queries:
+          type: object
+          description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
         api_key:
           type: string
           writeOnly: true
@@ -580,7 +604,19 @@ components:
           description: Injection type identifier
         base_url:
           type: string
-          description: Optional base URL. If not specified, uses api.anthropic.com
+          description: Optional base URL. If not specified, uses api.anthropic.com. The host is matched exactly. When a path is present, it matches the normalized request path exactly; a trailing `*` enables normalized string-prefix matching.
+        if_headers:
+          type: object
+          description: Optional HTTP request headers that must already be present with exact values before this injection matches. Header names are matched case-insensitively; repeated headers compare only their first value. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set request headers.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_queries:
+          type: object
+          description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
         api_key:
           type: string
           writeOnly: true
@@ -601,7 +637,19 @@ components:
           description: Injection type identifier
         base_url:
           type: string
-          description: Optional base URL. If not specified, uses generativelanguage.googleapis.com
+          description: Optional base URL. If not specified, uses generativelanguage.googleapis.com. The host is matched exactly. When a path is present, it matches the normalized request path exactly; a trailing `*` enables normalized string-prefix matching.
+        if_headers:
+          type: object
+          description: Optional HTTP request headers that must already be present with exact values before this injection matches. Header names are matched case-insensitively; repeated headers compare only their first value. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set request headers.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_queries:
+          type: object
+          description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
         api_key:
           type: string
           writeOnly: true
@@ -624,7 +672,19 @@ components:
           description: Injection type identifier
         base_url:
           type: string
-          description: Optional base URL. If not specified, uses api.qnaigc.com
+          description: Optional base URL. If not specified, uses api.qnaigc.com. The host is matched exactly. When a path is present, it matches the normalized request path exactly; a trailing `*` enables normalized string-prefix matching.
+        if_headers:
+          type: object
+          description: Optional HTTP request headers that must already be present with exact values before this injection matches. Header names are matched case-insensitively; repeated headers compare only their first value. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set request headers.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_queries:
+          type: object
+          description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
         api_key:
           type: string
           writeOnly: true
@@ -643,6 +703,21 @@ components:
           enum:
             - github
           description: Injection type identifier
+        base_url:
+          type: string
+          description: Optional base URL. If not specified, the platform applies the token to github.com and api.github.com. When specified, the host must be github.com or api.github.com. When a path is present, it matches the normalized request path exactly; a trailing `*` enables normalized string-prefix matching.
+        if_headers:
+          type: object
+          description: Optional HTTP request headers that must already be present with exact values before this injection matches. Header names are matched case-insensitively; repeated headers compare only their first value. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set request headers.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_queries:
+          type: object
+          description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
         token:
           type: string
           writeOnly: true
