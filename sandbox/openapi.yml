@@ -755,7 +755,7 @@ components:
         Kodo bucket resource mounted into the sandbox via NFS.
         The platform creates an NFS-backed proxy that maps the Kodo bucket to a local path inside the sandbox.
         Credentials (access_key/secret_key) are never exposed inside the sandbox.
-        Note: Kodo resource is only supported when creating a sandbox with Qiniu AKSK authentication. API key authentication is not supported.
+        Note: Kodo resources require access key authentication. API key authentication is not supported.
       required:
         - type
         - bucket
@@ -816,6 +816,7 @@ components:
         - buildCount
         - envdVersion
         - aliases
+        - names
         - buildStatus
       properties:
         templateID:
@@ -835,7 +836,13 @@ components:
           description: Whether the template is public or only accessible by the team
         aliases:
           type: array
-          description: Aliases of the template
+          description: Aliases of the template (deprecated)
+          deprecated: true
+          items:
+            type: string
+        names:
+          type: array
+          description: Names of the template (namespace/alias format when namespaced)
           items:
             type: string
         createdAt:
@@ -1009,6 +1016,7 @@ components:
         - templateID
         - public
         - aliases
+        - names
         - createdAt
         - updatedAt
         - lastSpawnedAt
@@ -1024,7 +1032,13 @@ components:
           description: Whether the template is public or only accessible by the team
         aliases:
           type: array
-          description: Aliases of the template
+          description: Aliases of the template (deprecated)
+          deprecated: true
+          items:
+            type: string
+        names:
+          type: array
+          description: Names of the template (namespace/alias format when namespaced)
           items:
             type: string
         createdAt:
@@ -1858,6 +1872,104 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+  /sandboxes/{sandboxID}/injections:
+    get:
+      operationId: getSandboxInjections
+      description: |
+        Retrieve the sandbox's current runtime injection rules.
+        Sensitive fields (api_key, token, headers) are returned masked – the first few characters are shown followed by "****".
+        InjectionById references are returned as type: id with the rule ID.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+      responses:
+        "200":
+          description: Current injection rules (sensitive fields masked)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - injections
+                properties:
+                  injections:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SandboxInjection"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      operationId: updateSandboxInjections
+      description: Replace the sandbox's runtime injection rules (API key headers, etc.). This fully replaces any existing injection configuration. Changes take effect immediately for new outbound HTTPS connections.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - injections
+              properties:
+                injections:
+                  type: array
+                  description: New injection rules. Fully replaces the existing configuration.
+                  items:
+                    $ref: "#/components/schemas/SandboxInjection"
+      responses:
+        "204":
+          description: Injection rules successfully updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /sandboxes/{sandboxID}/github-token:
+    put:
+      operationId: updateSandboxGithubToken
+      description: |
+        Update the GitHub authorization token.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - authorization_token
+              properties:
+                authorization_token:
+                  type: string
+                  description: New GitHub authorization token
+      responses:
+        "204":
+          description: GitHub token successfully updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
   /v3/templates:
     post:
       operationId: createTemplateV3
@@ -1999,7 +2111,7 @@ paths:
       deprecated: true
       tags: [templates]
       security:
-        - AccessTokenAuth: []
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -2047,7 +2159,7 @@ paths:
       deprecated: true
       tags: [templates]
       security:
-        - AccessTokenAuth: []
+        - ApiKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/templateID"
       requestBody:
