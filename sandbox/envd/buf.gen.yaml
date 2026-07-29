@@ -1,10 +1,10 @@
 version: v1
 plugins:
   - plugin: go
-    out: ../../../qiniu-go-sdk/sandbox/internal/envdapi
+    out: ../../../sandbox/internal/envdapi
     opt: paths=source_relative
   - plugin: connect-go
-    out: ../../../qiniu-go-sdk/sandbox/internal/envdapi
+    out: ../../../sandbox/internal/envdapi
     opt: paths=source_relative
 managed:
   enabled: true
