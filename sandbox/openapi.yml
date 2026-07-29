@@ -1507,6 +1507,16 @@ paths:
       tags: [sandboxes]
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          description: >-
+            Identifies one logical sandbox creation within the authenticated team. Retry an uncertain request with the same key and request body.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
       requestBody:
         required: true
         content:
@@ -1524,6 +1534,43 @@ paths:
           $ref: "#/components/responses/401"
         "400":
           $ref: "#/components/responses/400"
+        "408":
+          description: >-
+            Sandbox creation timed out. GitHub repository clone timeouts return a more specific message. The retry hint is included only when the request supplied an Idempotency-Key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                genericWithIdempotencyKey:
+                  summary: Generic creation timeout with an idempotency key
+                  value:
+                    code: 408
+                    message: Sandbox creation timed out. Retry with the same idempotency key.
+                githubCloneWithIdempotencyKey:
+                  summary: GitHub clone timeout with an idempotency key
+                  value:
+                    code: 408
+                    message: GitHub repository clone timed out. Retry with the same idempotency key.
+                genericWithoutIdempotencyKey:
+                  summary: Generic creation timeout without an idempotency key
+                  value:
+                    code: 408
+                    message: Sandbox creation timed out.
+                githubCloneWithoutIdempotencyKey:
+                  summary: GitHub clone timeout without an idempotency key
+                  value:
+                    code: 408
+                    message: GitHub repository clone timed out.
+        "409":
+          description: The idempotency key was already used with different request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: 409
+                message: Idempotency key was already used with different request parameters
         "500":
           $ref: "#/components/responses/500"
   /v2/sandboxes:
