@@ -133,6 +133,11 @@ components:
       format: int32
       minimum: 0
       description: Disk size for the sandbox in MiB
+    TemplateBuildDiskSizeMB:
+      type: integer
+      format: int32
+      minimum: 10240
+      description: Disk size for a template build in MiB; must be at least 10240 MiB
     EnvdVersion:
       type: string
       description: Version of the envd running in the sandbox
@@ -739,6 +744,10 @@ components:
           enum:
             - github_repository
           description: Resource type identifier
+        resource_id:
+          type: string
+          readOnly: true
+          description: Opaque server-generated short identifier for this Resource, using the res prefix. It remains unchanged when the Sandbox is paused and resumed.
         url:
           type: string
           description: GitHub repository URL in HTTPS form, or GitHub SSH-style form git@github.com:owner/repo.git. The platform normalizes the value to HTTPS.
@@ -748,14 +757,14 @@ components:
         authorization_token:
           type: string
           writeOnly: true
-          description: GitHub token used to access this repository. All GitHub repository resources in a single sandbox must currently use the same token.
+          description: GitHub token used to access this repository. Every repository Resource must provide its own token.
     KodoResource:
       type: object
       description: |
         Kodo bucket resource mounted into the sandbox via NFS.
         The platform creates an NFS-backed proxy that maps the Kodo bucket to a local path inside the sandbox.
         Credentials (access_key/secret_key) are never exposed inside the sandbox.
-        Note: Kodo resources require access key authentication. API key authentication is not supported.
+        The access key and secret key may be supplied in the Resource itself or through the authenticated Qiniu credential context.
       required:
         - type
         - bucket
@@ -766,6 +775,10 @@ components:
           enum:
             - kodo
           description: Resource type identifier
+        resource_id:
+          type: string
+          readOnly: true
+          description: Opaque server-generated identifier for this Resource. It remains unchanged when the Sandbox is paused and resumed.
         bucket:
           type: string
           description: Kodo bucket name
@@ -778,6 +791,25 @@ components:
         read_only:
           type: boolean
           description: Whether the mount is read-only. Automatically set to true when AK/SK lacks write permission. Can also be set explicitly.
+        access_key:
+          type: string
+          writeOnly: true
+          description: Kodo access key. Optional when supplied through the authenticated Qiniu credential context.
+        secret_key:
+          type: string
+          writeOnly: true
+          description: Kodo secret key. Optional when supplied through the authenticated Qiniu credential context.
+    ResourcePatch:
+      type: object
+      description: Update a GitHub Resource's authorization token. Kodo Resource updates are not supported.
+      required:
+        - authorization_token
+      additionalProperties: false
+      properties:
+        authorization_token:
+          type: string
+          writeOnly: true
+          description: New GitHub authorization token. This is currently the only supported Resource update.
     ResumedSandbox:
       properties:
         timeout:
@@ -1143,6 +1175,8 @@ components:
           $ref: "#/components/schemas/CPUCount"
         memoryMB:
           $ref: "#/components/schemas/MemoryMB"
+        diskSizeMB:
+          $ref: "#/components/schemas/TemplateBuildDiskSizeMB"
     TemplateBuildRequestV2:
       required:
         - alias
@@ -1976,6 +2010,68 @@ paths:
       responses:
         "204":
           description: Injection rules successfully updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /sandboxes/{sandboxID}/resources:
+    get:
+      operationId: getSandboxResources
+      description: List the sandbox's Resources. Credential fields are never returned.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+      responses:
+        "200":
+          description: The sandbox's Resources
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - resources
+                properties:
+                  resources:
+                    type: array
+                    maxItems: 20
+                    items:
+                      $ref: "#/components/schemas/SandboxResource"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /sandboxes/{sandboxID}/resources/{resourceID}:
+    patch:
+      operationId: patchSandboxResource
+      description: Update an existing GitHub Resource's authorization token. For a running sandbox, the derived GitHub injection takes effect immediately; Kodo Resource updates are not supported.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+        - name: resourceID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Server-generated short Resource ID using the res prefix
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourcePatch"
+      responses:
+        "204":
+          description: Resource successfully updated
         "400":
           $ref: "#/components/responses/400"
         "401":
