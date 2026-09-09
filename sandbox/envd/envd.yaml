@@ -34,10 +34,10 @@ paths:
       summary: Bootstrap and update envd runtime state
       description: |
         Configure envd runtime state. Each field in the request body is optional and is
-        applied independently: sync the system clock, merge environment variables, set the
-        access token, configure default user / workdir, install a CA certificate into the
-        system trust store, point `events.e2b.local` at the hyperloop IP, set up filesystem
-        mounts, and run post-init actions.
+        applied independently: download files, sync the system clock, merge environment
+        variables, set the access token, configure default user / workdir, install a CA
+        certificate into the system trust store, point `events.e2b.local` at the hyperloop
+        IP, set up filesystem mounts, and run post-init actions.
 
         Before an access token has been configured, `/init` may be called anonymously so a
         trusted caller can bootstrap the guest. Once an access token is configured, later
@@ -46,13 +46,20 @@ paths:
 
         `/init` may be called more than once. Most operations are idempotent — env vars are
         merged, the CA cert is appended only if missing, mounts skip targets that are
-        already mounted — but post-init actions run on every call. When `timestamp` is
-        provided, requests older than the most recently applied `/init` are dropped, so
-        callers can safely retry without overwriting newer state.
+        already mounted, downloads skip destinations that already exist unless `overwrite`
+        is set — but post-init actions run on every call. When `timestamp` is provided,
+        requests older than the most recently applied `/init` are dropped, so callers can
+        safely retry without overwriting newer state.
 
-        Privileged fields such as `mounts` and `postInitActions` directly affect the
-        sandbox's filesystem and execute arbitrary commands; they rely on the trusted
-        caller / transport boundary for safety.
+        `downloads` run before mounts and post-init actions, so downloaded files are
+        available to later steps. Sources that respond to HTTP range requests are fetched
+        via concurrent range requests for speed; the probe response's `ETag`/`Last-Modified`
+        is echoed back as `If-Range` on each chunk request so a source that changes mid
+        download is detected and fails the request instead of producing a corrupted file.
+
+        Privileged fields such as `downloads`, `mounts`, and `postInitActions` directly
+        affect the sandbox's filesystem and execute arbitrary commands; they rely on the
+        trusted caller / transport boundary for safety.
       security:
         - AccessTokenAuth: []
         - {}
@@ -62,6 +69,11 @@ paths:
             schema:
               type: object
               properties:
+                downloads:
+                  type: array
+                  description: Files to download into the sandbox before mounts and post-init actions run. Sources that respond to HTTP range requests are downloaded via concurrent range requests; otherwise a single streamed request is used.
+                  items:
+                    $ref: "#/components/schemas/Download"
                 hyperloopIP:
                   type: string
                   description: IP address of the hyperloop server to connect to
@@ -96,9 +108,25 @@ paths:
         "204":
           description: Init applied successfully (or skipped because the request timestamp is older than the last applied init)
         "400":
-          description: Invalid request body, or a failure occurred while applying init data (e.g. a mount or post-init action failed)
+          description: Invalid request body, or a failure occurred while applying init data (e.g. a download, mount, or post-init action failed)
         "409":
           description: Access token has already been configured with a different value
+
+  /collapse:
+    post:
+      summary: Collapse envd's own anonymous heap into 2 MiB transparent hugepages before pause, so on resume envd touches fewer distinct guest-physical frames (each a cold fault). Best-effort.
+      security:
+        - AccessTokenAuth: []
+        - {}
+      responses:
+        "200":
+          description: Heap collapsed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollapseResult"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /envs:
     get:
@@ -261,6 +289,36 @@ components:
             $ref: "#/components/schemas/Error"
 
   schemas:
+    Download:
+      type: object
+      required:
+        - url
+        - destinationPath
+      properties:
+        url:
+          type: string
+          description: HTTP(S) URL to download the file from
+        destinationPath:
+          type: string
+          description: Absolute path inside the sandbox to save the downloaded file
+        user:
+          type: string
+          description: Optional owner for the downloaded file (defaults to defaultUser)
+        mode:
+          type: integer
+          description: Optional file permission bits (e.g. 420 for 0644). Defaults to 0644.
+        headers:
+          type: object
+          description: Optional HTTP request headers (e.g. Authorization) sent with both the probe and download requests
+          additionalProperties:
+            type: string
+        overwrite:
+          type: boolean
+          description: If true, re-download and overwrite the destination even if it already exists. Defaults to false (skip if the destination already exists).
+        timeoutMs:
+          type: integer
+          format: int64
+          description: Optional timeout in milliseconds for this download. Defaults to 5 minutes.
     Mount:
       type: object
       required:
@@ -300,6 +358,29 @@ components:
           type: integer
           format: int64
           description: Optional timeout in milliseconds for this command
+    CollapseResult:
+      type: object
+      description: Per-call statistics from a heap collapse
+      properties:
+        regions:
+          type: integer
+          description: Anonymous read-write regions scanned
+        chunks:
+          type: integer
+          description: 2 MiB chunks attempted
+        collapsed:
+          type: integer
+          description: Chunks whose base pages were actually migrated into a new hugepage (real work)
+        alreadyHuge:
+          type: integer
+          description: Chunks MADV_COLLAPSE accepted but were already hugepages (no work)
+        skipped:
+          type: integer
+          description: Chunks that could not be collapsed (empty or ineligible)
+        elapsedMs:
+          type: integer
+          format: int64
+          description: Wall-clock time spent collapsing, in milliseconds
     Error:
       required:
         - message
