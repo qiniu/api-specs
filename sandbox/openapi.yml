@@ -133,11 +133,12 @@ components:
       format: int32
       minimum: 0
       description: Disk size for the sandbox in MiB
-    TemplateBuildDiskSizeMB:
+    MinFreeDiskMb:
       type: integer
       format: int32
-      minimum: 10240
-      description: Disk size for a template build in MiB; must be at least 10240 MiB
+      minimum: 0
+      description: >-
+        Requested minimum free space after the template's build steps, in MiB. Omit to use the team's default. Set to 0 to request no minimum free-disk growth. The filesystem is never shrunk, including inherited or already-larger filesystems. Growth is best effort, so filesystem metadata can leave the available space slightly below the requested minimum.
     EnvdVersion:
       type: string
       description: Version of the envd running in the sandbox
@@ -418,6 +419,52 @@ components:
         sandboxes:
           additionalProperties:
             $ref: "#/components/schemas/SandboxMetric"
+    SandboxAutoResumeEnabled:
+      type: boolean
+      description: Auto-resume enabled flag for paused sandboxes. Default false.
+      default: false
+    SandboxAutoResumeConfig:
+      type: object
+      description: Auto-resume configuration for paused sandboxes.
+      required:
+        - enabled
+      properties:
+        enabled:
+          $ref: "#/components/schemas/SandboxAutoResumeEnabled"
+    SnapshotInfo:
+      type: object
+      required:
+        - snapshotID
+        - names
+      properties:
+        snapshotID:
+          type: string
+          description: Identifier of the snapshot template that can be used to create new sandboxes
+        names:
+          type: array
+          items:
+            type: string
+          description: >-
+            Names associated with the snapshot template, including its namespace when present.
+    SandboxPauseRequest:
+      type: object
+      properties:
+        memory:
+          type: boolean
+          default: true
+          description: >-
+            Include memory in the pause snapshot. When false, persist only the filesystem; resuming the sandbox cold-boots from disk and loses in-memory state, including running processes. Filesystem-only snapshots cannot be auto-resumed by traffic, even when autoResume is enabled; explicitly call connect or resume to restart the sandbox. Defaults to true.
+    SandboxSnapshotRequest:
+      type: object
+      properties:
+        memory:
+          type: boolean
+          default: true
+          description: Include memory in the snapshot. Set false to create a filesystem-only template that cold-boots.
+        name:
+          type: string
+          description: >-
+            Optional alias with an optional tag, for example demo:v1. The name must not contain '/'; the namespace is assigned from the authenticated account. If a snapshot template with this alias already exists and is owned by the caller's team, the new build will be assigned to it instead of creating another template.
     NewSandbox:
       required:
         - templateID
@@ -435,6 +482,13 @@ components:
           type: boolean
           default: false
           description: Automatically pauses the sandbox after the timeout
+        autoPauseMemory:
+          type: boolean
+          default: true
+          description: >-
+            Controls the snapshot kind taken when the sandbox auto-pauses on timeout (only relevant when autoPause is true). When false, the auto-pause drops the in-memory state and persists only the filesystem (a filesystem-only snapshot); resuming it cold-boots (reboots) the sandbox from disk. Such a snapshot cannot be auto-resumed by traffic and must be resumed explicitly, so it cannot be combined with autoResume. Defaults to true (full memory snapshot).
+        autoResume:
+          $ref: "#/components/schemas/SandboxAutoResumeConfig"
         secure:
           type: boolean
           description: Secure all system communication with sandbox
@@ -551,6 +605,24 @@ components:
         if_queries:
           type: object
           description: Optional query parameters that must already be present with exact values before this injection matches. Query parameter names are case-sensitive. These conditions only scope request matching and are not an authorization boundary; sandbox processes can set query parameters.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        if_body:
+          type: object
+          description: |
+            Top-level JSON string fields that must exist with exactly matching values before this injection matches. All conditions must match; names and values are case-sensitive.
+            Body processing supports uncompressed application/json requests up to 1 MiB. Invalid or unsupported bodies produce an error when body processing is required.
+          maxProperties: 20
+          additionalProperties:
+            type: string
+        body:
+          type: object
+          writeOnly: true
+          description: |
+            Top-level JSON field names mapped to secret string values to set on matching requests. Existing string fields are overwritten and missing fields are added. An existing target with a non-string value produces an error. Other fields retain their values.
+            Values are assigned directly. Values are omitted from API responses.
+            Body processing supports uncompressed application/json requests up to 1 MiB. Invalid or unsupported bodies produce an error when body processing is required.
           maxProperties: 20
           additionalProperties:
             type: string
@@ -832,6 +904,15 @@ components:
           type: integer
           format: int32
           minimum: 0
+    ConnectSandboxV2:
+      type: object
+      properties:
+        timeout:
+          description: Timeout in seconds from the current time after which the sandbox should expire
+          type: integer
+          format: int32
+          minimum: 1
+          default: 300
     Template:
       required:
         - templateID
@@ -1175,8 +1256,8 @@ components:
           $ref: "#/components/schemas/CPUCount"
         memoryMB:
           $ref: "#/components/schemas/MemoryMB"
-        diskSizeMB:
-          $ref: "#/components/schemas/TemplateBuildDiskSizeMB"
+        minFreeDiskMb:
+          $ref: "#/components/schemas/MinFreeDiskMb"
     TemplateBuildRequestV2:
       required:
         - alias
@@ -1399,6 +1480,23 @@ components:
       x-enum-varnames:
         - LogsSourceTemporary
         - LogsSourcePersistent
+    TemplateTag:
+      required:
+        - tag
+        - buildID
+        - createdAt
+      properties:
+        tag:
+          type: string
+          description: The tag name
+        buildID:
+          type: string
+          format: uuid
+          description: Identifier of the build associated with this tag
+        createdAt:
+          type: string
+          format: date-time
+          description: Time when the tag was assigned
     AssignedTemplateTags:
       required:
         - tags
@@ -1448,6 +1546,9 @@ components:
           type: integer
           format: int32
           description: Error code
+        error_code:
+          type: string
+          description: Machine-readable semantic error code
         message:
           type: string
           description: Error
@@ -1807,7 +1908,111 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-  # TODO: Pause and resume might be exposed as POST /sandboxes/{sandboxID}/snapshot and then POST /sandboxes with specified snapshotting setup
+  /sandboxes/{sandboxID}/snapshots:
+    post:
+      operationId: createSandboxSnapshot
+      description: >-
+        Create a persistent snapshot of the sandbox. When `name` identifies an existing snapshot template owned by the caller's team, the new build is assigned to that template instead of creating a new one.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+        - name: Idempotency-Key
+          in: header
+          required: true
+          description: >-
+            Required. Identifies one snapshot request within the authenticated team. Retries must use the same key, sandbox ID and request body. A retry waits for the original capture or replays its terminal response, even if the source sandbox is gone. Client cancellation does not cancel an accepted capture. Use a new key for a new capture, including another version with the same name. Completed captures, including failures, are replayed. A request explicitly rejected before capture during API shutdown can be retried with the same key. Records expire after 35 minutes; completion starts a fresh 35-minute retention period. An unknown outcome must be investigated before a new capture.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SandboxSnapshotRequest"
+      responses:
+        "201":
+          description: Snapshot created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "408":
+          description: >-
+            The caller stopped waiting while the snapshot is still processing. Retry with the same Idempotency-Key, sandbox ID and request body.
+          headers:
+            Retry-After:
+              schema: {type: integer}
+              description: Suggested delay before retrying, in seconds
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          description: Service unavailable. Check error_code and message for retry guidance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /snapshots:
+    get:
+      operationId: listSnapshots
+      description: List the snapshot templates that belong to the team
+      tags: [snapshots]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: sandboxID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only return snapshots created from this sandbox
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: >-
+            Filter snapshots by name or template ID, optionally tag-qualified (e.g. "my-snapshot", "my-team/my-snapshot" or "my-snapshot:v1").
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationNextToken"
+      responses:
+        "200":
+          description: Successfully returned snapshots
+          headers:
+            X-Next-Token:
+              schema: {type: string}
+              description: Cursor for next page
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SnapshotInfo"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/pause:
     post:
       operationId: pauseSandbox
@@ -1817,9 +2022,17 @@ paths:
         - ApiKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/sandboxID"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SandboxPauseRequest"
       responses:
         "204":
           description: The sandbox was paused successfully and can be resumed
+        "400":
+          $ref: "#/components/responses/400"
         "409":
           $ref: "#/components/responses/409"
         "404":
@@ -1861,8 +2074,9 @@ paths:
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/connect:
     post:
+      deprecated: true
       operationId: connectSandbox
-      description: Returns sandbox details. If the sandbox is paused, it will be resumed. TTL is only extended.
+      description: Returns sandbox details. If the sandbox is paused, it will be resumed. TTL is only extended. Use POST /v2/sandboxes/{sandboxID}/connect instead.
       tags: [sandboxes]
       security:
         - ApiKeyAuth: []
@@ -1893,6 +2107,46 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          description: Sandbox is changing state
+        "500":
+          $ref: "#/components/responses/500"
+  /v2/sandboxes/{sandboxID}/connect:
+    post:
+      operationId: connectSandboxV2
+      description: Returns sandbox details. If the sandbox is paused, it will be resumed. TTL is only extended. The request body is optional; an omitted timeout defaults to 300 seconds.
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/sandboxID"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectSandboxV2"
+      responses:
+        "200":
+          description: The sandbox was already running
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sandbox"
+        "201":
+          description: The sandbox was resumed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sandbox"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          description: Sandbox is changing state
         "500":
           $ref: "#/components/responses/500"
   /sandboxes/{sandboxID}/timeout:
@@ -2548,6 +2802,35 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /templates/{templateID}/tags:
+    get:
+      operationId: listTemplateTags
+      summary: List template tags
+      description: List all tags for a template, returning the latest assignment for each tag
+      tags: [tags]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/templateID"
+      responses:
+        "200":
+          description: Successfully returned the template tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemplateTag"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
