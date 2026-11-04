@@ -76,6 +76,11 @@ response:
             documentation: 文件生命周期中转为低频存储的日期，UNIX 时间戳格式，文件在设置转低频后才会返回该字段
             type: integer
             optional: omitempty
+          - field_name: transition_to_intelligent_tiering_time
+            key: transitionToIntelligentTiering
+            documentation: 文件生命周期中转为智能分层存储的日期，UNIX 时间戳格式，文件在设置转智能分层后才会返回该字段
+            type: integer
+            optional: omitempty
           - field_name: transition_to_archive_time
             key: transitionToARCHIVE
             documentation: 文件生命周期中转为归档存储的日期，UNIX 时间戳格式，文件在设置转归档后才会返回该字段
