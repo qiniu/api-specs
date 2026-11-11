@@ -139,6 +139,12 @@ components:
       minimum: 0
       description: >-
         Requested minimum free space after the template's build steps, in MiB. Omit to use the team's default. Set to 0 to request no minimum free-disk growth. The filesystem is never shrunk, including inherited or already-larger filesystems. Growth is best effort, so filesystem metadata can leave the available space slightly below the requested minimum.
+    MinDiskMb:
+      type: integer
+      format: int32
+      minimum: 0
+      description: >-
+        Requested minimum total disk size of the template after its build steps, in MiB. Omit or set to 0 to request no minimum. When minFreeDiskMb is also set, the disk satisfies both. The disk is never shrunk, so a template whose disk is already larger keeps its size.
     EnvdVersion:
       type: string
       description: Version of the envd running in the sandbox
@@ -1258,6 +1264,8 @@ components:
           $ref: "#/components/schemas/MemoryMB"
         minFreeDiskMb:
           $ref: "#/components/schemas/MinFreeDiskMb"
+        minDiskMb:
+          $ref: "#/components/schemas/MinDiskMb"
     TemplateBuildRequestV2:
       required:
         - alias
